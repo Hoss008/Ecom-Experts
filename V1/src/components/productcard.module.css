@@ -1,11 +1,37 @@
+.bundleWrapper {
+  display: flex;
+  align-items: flex-start; /* Keeps the sidebar from stretching vertically */
+  gap: 29px; /* The space between the left and right panels */
+  max-width: 1200px; /* Prevents the whole page from getting too wide on huge monitors */
+  margin: 0 auto; /* Centers the whole thing on the page */
+}
+
+.leftPanel {
+  /* flex: 1 tells this panel to grow and fill all remaining space */
+  flex: 1; 
+  
+  /* You can use your 768px here as a MAX width, so it doesn't get too stretched out */
+  max-width: 768px; 
+}
+
+.rightSidebar {
+  /* Give the sidebar a fixed width based on the Figma design */
+  width: 380px; 
+  
+  /* position: sticky is great here so it follows the user as they scroll down the left side */
+  position: sticky;
+  top: 24px; 
+}
+
 .stepcontainer {
   background-color: var(--background); 
   display: flex;
   flex-direction: column;
-  padding: 20px 15px 20px 15px;
   border-radius: 10px; 
+  padding: 20px 15px 20px 15px;
   gap: 15px;
 }
+
 
 .stepIndicator {
   font-size: 12px;
@@ -17,12 +43,18 @@
   padding-right: 15px;
   margin-bottom: 5px;
   border-bottom: 0.5px solid var(--border-color);
+  align-self: stretch;  /* Forces the element to take full width */
+  margin-left: -15px;   /* Pulls the border left to touch the container edge */
+  margin-right: -15px;  /* Pulls the border right to touch the container edge */
+  padding-left: 15px;   /* Pushes the text back in so it aligns with your camera icon */
+  
 }
 
 .titleRow {
   display: flex;
-  align-items: center;  
-  gap: 8px; 
+  justify-content: space-between;
+  align-items: center; 
+  width: 100%; 
 }
 
 .title {
@@ -31,4 +63,20 @@
   font-size: 22px;
   font-weight: 400;
   color: var(--text-dark);
+}
+
+.titleLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px; 
+}
+
+.selectedCount {
+  color: var(--primary-purple);
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  /* display: flex; */
+  /* align-items: center; */
+  line-height: 16px;
 }
