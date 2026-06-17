@@ -1,22 +1,19 @@
 .bundleWrapper {
   display: flex;
-  align-items: flex-start; /* Keeps the sidebar from stretching vertically */
-  gap: 29px; /* The space between the left and right panels */
-  max-width: 1200px; /* Prevents the whole page from getting too wide on huge monitors */
-  margin: 0 auto; /* Centers the whole thing on the page */
+  align-items: flex-start; 
+  gap: 29px; 
+  max-width: 1200px; 
+  margin: 0 auto; 
 }
 
 .leftPanel {
   /* flex: 1 tells this panel to grow and fill all remaining space */
-  flex: 1; 
-  
-  /* You can use your 768px here as a MAX width, so it doesn't get too stretched out */
+  flex: 1;
   max-width: 768px; 
 }
 
-.rightSidebar {
-  /* Give the sidebar a fixed width based on the Figma design */
-  width: 380px; 
+.ReviewPanel {
+  width: 399px; 
   
   /* position: sticky is great here so it follows the user as they scroll down the left side */
   position: sticky;
@@ -58,7 +55,7 @@
 }
 
 .title {
-  padding-bottom: 4px;
+  padding-bottom: 3px;
   margin: 0; 
   font-size: 22px;
   font-weight: 400;
@@ -79,4 +76,53 @@
   /* display: flex; */
   /* align-items: center; */
   line-height: 16px;
+}
+
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 15px; 
+  margin-bottom: 32px; 
+  width: 100%;
+}
+
+/* --- THE INDIVIDUAL CARD SHELL --- */
+.productItem {
+  background-color: #ffffff;
+  border: 1px solid var(--primary-purple); 
+  border-radius: 12px;
+  padding: 16px;
+  /* We will use flexbox inside the card later to align the image and text */
+  display: flex; 
+  gap: 16px;
+  position: relative; /* Important for placing the "Save 22%" badge later */
+}
+
+/* --- THE CENTERED 5TH CARD --- */
+.centeredRow {
+  /* This tells the wrapper to span all the way across both columns */
+  grid-column: 1 / -1; 
+  display: flex;
+  justify-content: center; /* Centers the 5th card horizontally */
+}
+
+.centeredRow .productItem {
+  width: 100%;
+  max-width: 360px; 
+}
+
+/* --- THE NEXT BUTTON --- */
+.nextButton {
+  align-self: center; 
+  padding: 12px 32px;
+  background-color: transparent;
+  color: var(--primary-purple);
+  border: 1px solid var(--primary-purple);
+  border-radius: 7px;
+  font-size: 18px;
+  font-weight: 400;
+  cursor: pointer;
+  margin-bottom: 8px;
+  line-height: 24px;
 }
