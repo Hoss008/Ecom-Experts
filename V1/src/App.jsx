@@ -1,10 +1,11 @@
 import './global.css';
+import ProductCard from './components/ProductCard';
 
 function App() {
   return (
-    <div className="App">
-      <h1>Choose your cameras</h1>
-    </div>
+    <>
+    <ProductCard/>
+    </>
   );
 }
 
