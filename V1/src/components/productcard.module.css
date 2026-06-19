@@ -90,7 +90,7 @@
 
 .badge {
   position: absolute;
-  top: 11px; /* Pulls it up over the border */
+  top: 11px; 
   left: 11px;
   background-color: var(--primary-purple); /* Or #4f46e5 */
   color: white;
@@ -100,7 +100,6 @@
   border-radius: 12px;
 }
 
-/* Left side: Image */
 .itemImageContainer {
   width: 90px;
   display: flex;
@@ -199,9 +198,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  /* background-color: #f8fafc;  */
-  /* border: 1px solid var(--border-color); */
-  /* border-radius: 6px; */
   padding: 2px 4px;
 }
 
@@ -235,7 +231,7 @@
 
 .oldPrice {
   text-decoration: line-through;
-  color: #ef4444; /* Red color from Figma */
+  color: #D8392B; 
   font-size: 12px;
   margin-bottom: 2px;
 }
@@ -246,12 +242,10 @@
   color: #575757;
 }
 
-/* --- THE CENTERED 5TH CARD --- */
 .centeredRow {
-  /* This tells the wrapper to span all the way across both columns */
   grid-column: 1 / -1;
   display: flex;
-  justify-content: center; /* Centers the 5th card horizontally */
+  justify-content: center; 
 }
 
 .centeredRow .productItem {
@@ -259,8 +253,8 @@
   max-width: 360px;
 }
 
-/* --- THE NEXT BUTTON --- */
 .nextButton {
+  font-family: inherit;
   align-self: center;
   padding: 5px 24px;
   background-color: transparent;
@@ -268,7 +262,7 @@
   border: 1px solid var(--primary-purple);
   border-radius: 7px;
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 600;
   cursor: pointer;
   margin-bottom: 8px;
   line-height: 24px;

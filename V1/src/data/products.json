@@ -23,7 +23,10 @@
         "price": 34.98,
         "oldPrice": 39.98,
         "badge": "Save 12%",
-        "colors": ["White", "Black"]
+        "colors": [
+          { "name": "White", "iconId": "/small/whitev3.svg" },
+          { "name": "Black", "iconId": "/small/blackv3.svg" }
+        ]
       },
       {
         "id": "cam-floodlight-v2",
@@ -33,7 +36,10 @@
         "price": 69.98,
         "oldPrice": 89.98,
         "badge": "Save 22%",
-        "colors": ["White", "Black"]
+        "colors": [
+          { "name": "White", "iconId": "/small/whitev2.svg" },
+          { "name": "Black", "iconId": "/small/blackv2.svg" }
+        ]
       },
       {
         "id": "duo-cam-doorbell",
@@ -53,7 +59,10 @@
         "price": 89.98,
         "oldPrice": null,
         "badge": null,
-        "colors": ["White", "Black"]
+        "colors": [
+          { "name": "White", "iconId": "/small/pro1.svg" },
+          { "name": "Black", "iconId": "/small/blackpro.svg" }
+        ]
       }
     ]
   },
