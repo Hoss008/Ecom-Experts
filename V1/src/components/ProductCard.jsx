@@ -8,11 +8,12 @@ const SingleProductItem = ({ product }) => {
       {product.badge && <span className={styles.badge}>{product.badge}</span>}
 
       <div className={styles.itemImageContainer}>
+        {/* Directly render the image path from the JSON */}
         {product.image ? (
-          <img 
-            src={product.image} 
-            alt={product.title} 
-            className={styles.productImage} 
+          <img
+            src={product.image}
+            alt={product.title}
+            className={styles.productImage}
           />
         ) : (
           <div className={styles.placeholderBox}>IMG</div>
@@ -23,15 +24,24 @@ const SingleProductItem = ({ product }) => {
         <div className={styles.detailsTop}>
           <h3>{product.title}</h3>
           <p className={styles.description}>
-            {product.description} <a href="#" className={styles.learnMore}>Learn More</a>
+            {product.description}{" "}
+            <a href="#" className={styles.learnMore}>
+              Learn More
+            </a>
           </p>
 
           {product.colors && product.colors.length > 0 && (
             <div className={styles.colorPicker}>
-              {product.colors.map((color) => (
-                <button key={color} className={styles.colorBtn}>
-                  <span className={`${styles.colorDot} ${styles[color.toLowerCase()]}`}></span>
-                  {color}
+              {product.colors.map((colorObj) => (
+                <button key={colorObj.name} className={styles.colorBtn}>
+                  {/* Directly render the icon path from the JSON color object */}
+                  <img
+                    src={colorObj.iconId}
+                    alt={colorObj.name}
+                    className={styles.colorIcon}
+                  />
+
+                  {colorObj.name}
                 </button>
               ))}
             </div>
@@ -42,7 +52,11 @@ const SingleProductItem = ({ product }) => {
           <div className={styles.qtyControl}>
             <button className={styles.qtyBtn}>-</button>
             <span className={styles.qtyNumber}>
-              {product.title.includes('Pan') ? '2' : (product.price === 27.98 ? '1' : '0')}
+              {product.title.includes("Pan")
+                ? "2"
+                : product.price === 27.98
+                  ? "1"
+                  : "0"}
             </span>
             <button className={styles.qtyBtn}>+</button>
           </div>
@@ -76,7 +90,7 @@ function ProductCard() {
 
               <span className={styles.selectedCount}>2 selected &#9652;</span>
             </div>
-            
+
             <div className={styles.productGrid}>
               {products.catalog.cameras.map((product, index) => {
                 if (index === 4) {

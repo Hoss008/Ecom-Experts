@@ -7,15 +7,12 @@
 }
 
 .leftPanel {
-  /* flex: 1 tells this panel to grow and fill all remaining space */
   flex: 1;
   max-width: 768px;
 }
 
 .ReviewPanel {
   width: 399px;
-
-  /* position: sticky is great here so it follows the user as they scroll down the left side */
   position: sticky;
   top: 24px;
 }
@@ -39,10 +36,10 @@
   padding-right: 15px;
   margin-bottom: 5px;
   border-bottom: 0.5px solid var(--border-color);
-  align-self: stretch; /* Forces the element to take full width */
-  margin-left: -15px; /* Pulls the border left to touch the container edge */
-  margin-right: -15px; /* Pulls the border right to touch the container edge */
-  padding-left: 15px; /* Pushes the text back in so it aligns with your camera icon */
+  align-self: stretch;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding-left: 15px;
 }
 
 .titleRow {
@@ -71,8 +68,6 @@
   font-size: 14px;
   font-weight: 400;
   cursor: pointer;
-  /* display: flex; */
-  /* align-items: center; */
   line-height: 16px;
 }
 
@@ -128,10 +123,10 @@
 }
 
 .itemDetails {
-  flex: 1; /* Takes up all remaining space */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Pushes bottom row down */
+  justify-content: space-between;
 }
 
 .itemDetails h3 {
@@ -153,7 +148,6 @@
   white-space: nowrap;
 }
 
-/* Color Picker */
 .colorPicker {
   display: flex;
   gap: 8px;
@@ -162,8 +156,8 @@
 
 .colorBtn {
   background: white;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border: 0.5px solid var(--border-color);
+  border-radius: 2px;
   padding: 4px 8px;
   font-size: 11px;
   color: var(--text-dark);
@@ -245,7 +239,7 @@
 .currentPrice {
   font-size: 18px; /* Keeps the size consistent */
   font-weight: 400; /* This automatically triggers your Gilroy-Regular font! */
-  color: #575757; 
+  color: #575757;
 }
 
 /* --- THE CENTERED 5TH CARD --- */

@@ -9,7 +9,11 @@
         "price": 27.98,
         "oldPrice": 35.98,
         "badge": "Save 22%",
-        "colors": ["White", "Grey", "Black"]
+        "colors": [
+          { "name": "White", "iconId": "/small/whitev4.svg" },
+          { "name": "Grey", "iconId": "/small/greyv4.svg" },
+          { "name": "Black", "iconId": "/small/blackv4.svg" }
+        ]
       },
       {
         "id": "cam-pan-v3",
@@ -56,18 +60,49 @@
   "initialState": {
     "cart": {
       "cameras": [
-        { "id": "cam-v4", "quantity": 1, "color": "White", "price": 27.98, "oldPrice": 35.98 },
-        { "id": "cam-pan-v3", "quantity": 2, "color": "White", "price": 47.98, "oldPrice": 57.98 }
+        {
+          "id": "cam-v4",
+          "quantity": 1,
+          "color": "White",
+          "price": 27.98,
+          "oldPrice": 35.98
+        },
+        {
+          "id": "cam-pan-v3",
+          "quantity": 2,
+          "color": "White",
+          "price": 47.98,
+          "oldPrice": 57.98
+        }
       ],
       "sensors": [
-        { "id": "sense-motion", "title": "Wyze Sense Motion Sensor", "quantity": 2, "price": 59.98 },
-        { "id": "sense-hub", "title": "Wyze Sense Hub (Required)", "quantity": 1, "price": 0, "oldPrice": 29.92 }
+        {
+          "id": "sense-motion",
+          "title": "Wyze Sense Motion Sensor",
+          "quantity": 2,
+          "price": 59.98
+        },
+        {
+          "id": "sense-hub",
+          "title": "Wyze Sense Hub (Required)",
+          "quantity": 1,
+          "price": 0,
+          "oldPrice": 29.92
+        }
       ],
       "accessories": [
-        { "id": "microsd-256", "title": "Wyze MicroSD Card (256GB)", "quantity": 2, "price": 41.96 }
+        {
+          "id": "microsd-256",
+          "title": "Wyze MicroSD Card (256GB)",
+          "quantity": 2,
+          "price": 41.96
+        }
       ],
-      "plan": { 
-        "id": "cam-unlimited", "title": "Cam Unlimited", "price": 9.99, "oldPrice": 12.99 
+      "plan": {
+        "id": "cam-unlimited",
+        "title": "Cam Unlimited",
+        "price": 9.99,
+        "oldPrice": 12.99
       }
     }
   }
