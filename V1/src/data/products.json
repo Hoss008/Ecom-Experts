@@ -5,7 +5,7 @@
         "id": "cam-v4",
         "title": "Wyze Cam v4",
         "description": "The clearest Wyze Cam ever made.",
-
+        "image": "/images/cam4.png",
         "price": 27.98,
         "oldPrice": 35.98,
         "badge": "Save 22%",
