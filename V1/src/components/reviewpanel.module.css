@@ -1,13 +1,14 @@
 .reviewContainer {
-  background-color: var(--bg-light-blue); /* Matches your global.css #f8faff */
+  background-color: var(--background); 
   border-radius: 12px;
-  padding: 32px;
+  padding: 20px 32px 20px 32px;
   display: flex;
   flex-direction: column;
   width: 100%;
+  
 }
 
-/* --- Header --- */
+/*  Header  */
 .label {
   font-size: 12px;
   letter-spacing: 1px;
@@ -31,11 +32,10 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
-/* --- Sections --- */
 .section {
   padding-bottom: 24px;
   margin-bottom: 24px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #CED6DE;
 }
 
 .sectionTitle {
@@ -93,7 +93,7 @@
   gap: 16px;
 }
 
-/* Reusing your quantity controls */
+
 .qtyControl {
   display: flex;
   align-items: center;
@@ -255,7 +255,7 @@
 }
 
 .savingsText {
-  color: var(--green-success); /* Matches your #10b981 */
+  color: var(--green-success); 
   font-size: 13px;
   text-align: center;
   font-weight: 500;

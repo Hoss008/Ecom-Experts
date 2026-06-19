@@ -1,5 +1,6 @@
 import styles from './reviewpanel.module.css';
 import productsData from '../data/products.json';
+import fastShippingIcon from '../assets/icon/24/cam/fast.svg';
 
 // Reusable row for Cameras, Sensors, and Accessories
 const CartItem = ({ item }) => {
@@ -106,7 +107,7 @@ export default function ReviewPanel() {
 
         <div className={styles.totalRow}>
           {/* You'll replace this with the actual purple badge SVG from Figma */}
-          <div className={styles.guaranteeBadge}>100% Guarantee</div>
+           <img src={fastShippingIcon} alt="fast shipping icon" />
           
           <div className={styles.totalsRight}>
             <span className={styles.monthlyBadge}>as low as $19.19/mo</span>
