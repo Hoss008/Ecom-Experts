@@ -1,6 +1,8 @@
 import styles from './reviewpanel.module.css';
 import productsData from '../data/products.json';
-import fastShippingIcon from '../assets/icon/24/cam/fast.svg';
+import guaranteeIcon from '../assets/icon/24/cam/fast.svg';
+import fastShippingIcon from '../assets/icon/24/cam/fastshipping.svg';
+import guard from '../assets/icon/24/cam/guard.svg';
 
 // Reusable row for Cameras, Sensors, and Accessories
 const CartItem = ({ item }) => {
@@ -82,7 +84,7 @@ export default function ReviewPanel() {
         <h4 className={styles.sectionTitle}>PLAN</h4>
         <div className={styles.planRow}>
           <div className={styles.planLeft}>
-             <div className={styles.shieldPlaceholder}>🛡️</div>
+            <img src={guard} alt="guard icon" />
              <span className={styles.planTitle}><b>Cam</b> Unlimited</span>
           </div>
           <div className={styles.pricingCol}>
@@ -96,7 +98,7 @@ export default function ReviewPanel() {
       <div className={styles.summarySection}>
         <div className={styles.shippingRow}>
            <div className={styles.shippingLeft}>
-             <span className={styles.truckPlaceholder}>🚚</span>
+           <img src={fastShippingIcon} alt="fast shipping icon" />
              <span className={styles.shippingText}>Fast Shipping</span>
            </div>
            <div className={styles.pricingCol}>
@@ -107,7 +109,7 @@ export default function ReviewPanel() {
 
         <div className={styles.totalRow}>
           {/* You'll replace this with the actual purple badge SVG from Figma */}
-           <img src={fastShippingIcon} alt="fast shipping icon" />
+           <img src={guaranteeIcon} alt="guarantee icon" />
           
           <div className={styles.totalsRight}>
             <span className={styles.monthlyBadge}>as low as $19.19/mo</span>
