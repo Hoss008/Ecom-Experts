@@ -1,6 +1,6 @@
 import styles from "./productcard.module.css";
+import products from "../data/products.json";
 import camera from "../assets/icon/24/cam/camera.svg";
-import productsData from "../data/products.json";
 
 const SingleProductItem = ({ product }) => {
   return (
@@ -8,34 +8,57 @@ const SingleProductItem = ({ product }) => {
       {product.badge && <span className={styles.badge}>{product.badge}</span>}
 
       <div className={styles.itemImageContainer}>
-        <div className={styles.placeholderBox}>IMG</div>
+        {product.image ? (
+          <img 
+            src={product.image} 
+            alt={product.title} 
+            className={styles.productImage} 
+          />
+        ) : (
+          <div className={styles.placeholderBox}>IMG</div>
+        )}
       </div>
 
       <div className={styles.itemDetails}>
-        <h3>{product.title}</h3>
-        <p>
-          {product.description} <a href="#">Learn More</a>
-        </p>
+        <div className={styles.detailsTop}>
+          <h3>{product.title}</h3>
+          <p className={styles.description}>
+            {product.description} <a href="#" className={styles.learnMore}>Learn More</a>
+          </p>
 
-        {product.colors && product.colors.length > 0 && (
-          <div className={styles.colorPicker}>
-            {product.colors.map((color) => (
-              <span key={color}>{color}</span>
-            ))}
-          </div>
-        )}
-
-        <div className={styles.priceRow}>
-          {product.oldPrice && (
-            <span className={styles.oldPrice}>${product.oldPrice}</span>
+          {product.colors && product.colors.length > 0 && (
+            <div className={styles.colorPicker}>
+              {product.colors.map((color) => (
+                <button key={color} className={styles.colorBtn}>
+                  <span className={`${styles.colorDot} ${styles[color.toLowerCase()]}`}></span>
+                  {color}
+                </button>
+              ))}
+            </div>
           )}
-          <span className={styles.currentPrice}>${product.price}</span>
+        </div>
+
+        <div className={styles.cardBottomRow}>
+          <div className={styles.qtyControl}>
+            <button className={styles.qtyBtn}>-</button>
+            <span className={styles.qtyNumber}>
+              {product.title.includes('Pan') ? '2' : (product.price === 27.98 ? '1' : '0')}
+            </span>
+            <button className={styles.qtyBtn}>+</button>
+          </div>
+
+          {/* Pricing */}
+          <div className={styles.pricingCol}>
+            {product.oldPrice && (
+              <span className={styles.oldPrice}>${product.oldPrice}</span>
+            )}
+            <span className={styles.currentPrice}>${product.price}</span>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
 function ProductCard() {
   return (
     <>
@@ -46,6 +69,7 @@ function ProductCard() {
 
             <div className={styles.titleRow}>
               <div className={styles.titleLeft}>
+                {/* <img src={camera1} alt="camera icon" /> */}
                 <img src={camera} alt="camera icon" />
                 <h1 className={styles.title}>Choose your cameras</h1>
               </div>
@@ -54,7 +78,7 @@ function ProductCard() {
             </div>
             
             <div className={styles.productGrid}>
-              {productsData.catalog.cameras.map((product, index) => {
+              {products.catalog.cameras.map((product, index) => {
                 if (index === 4) {
                   return (
                     <div key={product.id} className={styles.centeredRow}>
@@ -62,7 +86,6 @@ function ProductCard() {
                     </div>
                   );
                 }
-
                 return <SingleProductItem key={product.id} product={product} />;
               })}
             </div>
@@ -72,7 +95,6 @@ function ProductCard() {
             </button>
           </div>
         </div>
-
         <aside className={styles.ReviewPanel}>
           {/* Review system goes here */}
         </aside>
