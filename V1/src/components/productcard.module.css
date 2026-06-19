@@ -81,7 +81,6 @@
 
 .productItem {
   background-color: #ffffff;
-  /* border: 1px solid var(--primary-purple);  */
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -150,21 +149,26 @@
 
 .colorPicker {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 12px;
+
 }
 
 .colorBtn {
   background: white;
-  border: 0.5px solid var(--border-color);
+  border: 0.5px solid #CCCCCC;
   border-radius: 2px;
-  padding: 4px 8px;
-  font-size: 11px;
+  padding: 1px 5px;
+  font-size: 10px;
   color: var(--text-dark);
+  font-weight: 400;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 0.2px;
   cursor: pointer;
+  letter-spacing: 0.6px;
+  line-height: 100%;
 }
 
 .colorDot {

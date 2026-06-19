@@ -34,7 +34,6 @@ const SingleProductItem = ({ product }) => {
             <div className={styles.colorPicker}>
               {product.colors.map((colorObj) => (
                 <button key={colorObj.name} className={styles.colorBtn}>
-                  {/* Directly render the icon path from the JSON color object */}
                   <img
                     src={colorObj.iconId}
                     alt={colorObj.name}
