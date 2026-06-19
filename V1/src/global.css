@@ -8,10 +8,12 @@
   --green-success: #10b981;
   --background: #edf4ff;
   --border-color: #1f1f1f;
+  --light-grey: #F0F4F7;
 }
 
 body {
   font-family: "Gilroy", sans-serif;
+  font-weight: 400;
   background-color: #ffffff;
   /* margin: 0; */
   padding-left: 7.625rem;
@@ -22,7 +24,17 @@ body {
 
 @font-face {
   font-family: "Gilroy";
-  src: url("./assets/fonts/Gilroy-Medium.woff2") format("woff2");
-  font-weight: 400;
+  src: url("./assets/fonts/Gilroy-Regular.woff2") format("woff2");
+  font-weight: 400; 
   font-style: normal;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("./assets/fonts/Gilroy-Medium.woff2") format("woff2");
+  font-weight: 500; 
+  font-style: normal;
+}
+.text-regular {
+  font-weight: 400; 
 }
