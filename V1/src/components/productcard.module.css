@@ -11,11 +11,6 @@
   max-width: 768px;
 }
 
-.ReviewPanel {
-  width: 399px;
-  position: sticky;
-  top: 24px;
-}
 
 .stepcontainer {
   background-color: var(--background);
@@ -237,8 +232,8 @@
 }
 
 .currentPrice {
-  font-size: 18px; /* Keeps the size consistent */
-  font-weight: 400; /* This automatically triggers your Gilroy-Regular font! */
+  font-size: 18px; 
+  font-weight: 400; 
   color: #575757;
 }
 

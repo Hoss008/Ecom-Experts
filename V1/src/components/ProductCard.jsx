@@ -1,6 +1,7 @@
 import styles from "./productcard.module.css";
 import products from "../data/products.json";
 import camera from "../assets/icon/24/cam/camera.svg";
+import ReviewPanel from "./ReviewPanel";
 
 const SingleProductItem = ({ product }) => {
   return (
@@ -108,8 +109,8 @@ function ProductCard() {
             </button>
           </div>
         </div>
-        <aside className={styles.ReviewPanel}>
-          {/* Review system goes here */}
+        <aside>
+          <ReviewPanel/>
         </aside>
       </div>
     </>
