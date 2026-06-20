@@ -2,6 +2,7 @@ import styles from "./productcard.module.css";
 import products from "../data/products.json";
 import camera from "../assets/icon/24/cam/camera.svg";
 import ReviewPanel from "./ReviewPanel";
+import ExtraPanel from "./ExtraPanel";
 
 const SingleProductItem = ({ product }) => {
   return (
@@ -108,6 +109,7 @@ function ProductCard() {
               Next: Choose your plan
             </button>
           </div>
+          <ExtraPanel />
         </div>
         <aside>
           <ReviewPanel/>

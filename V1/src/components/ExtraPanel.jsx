@@ -1,4 +1,7 @@
 import styles from './extrapanel.module.css';
+import waves from '../assets/icon/24/cam/waves.svg';
+import shield from '../assets/icon/24/cam/shield.svg';
+import extra from '../assets/icon/24/cam/extra.svg';
 
 // Reusable component for a single collapsed step
 const CollapsedStep = ({ stepNumber, title, iconPath }) => {
@@ -27,23 +30,20 @@ const CollapsedStep = ({ stepNumber, title, iconPath }) => {
 export default function RemainingSteps() {
   return (
     <div className={styles.container}>
-      {/* Just update these icon paths once you export the shield, 
-        sensor, and grid icons from Figma into your public folder! 
-      */}
       <CollapsedStep 
         stepNumber="2" 
         title="Choose your plan" 
-        iconPath="/icons/shield.svg" 
+        iconPath={shield}
       />
       <CollapsedStep 
         stepNumber="3" 
         title="Choose your sensors" 
-        iconPath="/icons/sensor.svg" 
+        iconPath={waves} 
       />
       <CollapsedStep 
         stepNumber="4" 
         title="Add extra protection" 
-        iconPath="/icons/grid.svg" 
+        iconPath={extra} 
       />
     </div>
   );
