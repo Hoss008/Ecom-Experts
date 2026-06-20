@@ -287,12 +287,20 @@
 }
 
 .saveLink {
-    font-style: italic;
+  font-style: italic;
   text-align: center;
   font-size: 13px;
   color: var(--text-muted);
   text-decoration: underline;
   margin-top: 4px;
+  transition: color 0.2s ease;
+}
+
+.saveLinkSaved {
+  color: var(--green-success);
+  text-decoration: none;
+  font-style: normal;
+  font-weight: 600;
 }
 
 /* Add to the bottom of reviewpanel.module.css */

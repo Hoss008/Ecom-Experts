@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styles from './reviewpanel.module.css';
 import useBundleStore, { getItemInfo, isCamera, isSensor, isAccessory } from '../store/useBundleStore';
 import { formatPrice } from '../utils/formatPrice';
@@ -45,6 +46,21 @@ export default function ReviewPanel() {
   const oldTotal = useBundleStore((s) => s.getOldTotal());
   const savings = useBundleStore((s) => s.getSavings());
   const monthlyPrice = useBundleStore((s) => s.getMonthlyPrice());
+
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    // persist middleware already auto-saves, but we force-flush here
+    // and give the user clear visual confirmation
+    const { cartItems, plan, activeStep } = useBundleStore.getState();
+    localStorage.setItem(
+      'ecom-experts-bundle',
+      JSON.stringify({ state: { cartItems, plan, activeStep }, version: 0 })
+    );
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
 
   // Split cart items by category, only include items with quantity > 0
   const cameraEntries = Object.entries(cartItems).filter(
@@ -149,7 +165,13 @@ export default function ReviewPanel() {
         )}
         
         <button className={styles.checkoutBtn}>Checkout</button>
-        <a href="#" className={styles.saveLink}>Save my system for later</a>
+        <a
+          href="#"
+          className={`${styles.saveLink} ${saved ? styles.saveLinkSaved : ''}`}
+          onClick={handleSave}
+        >
+          {saved ? '✓ Saved!' : 'Save my system for later'}
+        </a>
       </div>
     </aside>
   );

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import productsData from '../data/products.json';
 
 // ---------------------------------------------------------------------------
@@ -112,7 +113,9 @@ export function isAccessory(id) { return accessoryIds.has(id); }
 // ---------------------------------------------------------------------------
 // Store
 // ---------------------------------------------------------------------------
-const useBundleStore = create((set, get) => ({
+const useBundleStore = create(
+  persist(
+    (set, get) => ({
   // ── Catalog (read-only reference) ──────────────────────────────────
   catalog: productsData.catalog,
 
@@ -210,6 +213,17 @@ const useBundleStore = create((set, get) => ({
   getMonthlyPrice: () => {
     return get().getCartTotal() / 12;
   },
-}));
+    }),
+    {
+      name: 'ecom-experts-bundle',  // localStorage key
+      // Only persist user-driven state — catalog is always fresh from JSON
+      partialize: (state) => ({
+        cartItems: state.cartItems,
+        plan: state.plan,
+        activeStep: state.activeStep,
+      }),
+    }
+  )
+);
 
 export default useBundleStore;
