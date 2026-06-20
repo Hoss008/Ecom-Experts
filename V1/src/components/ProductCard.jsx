@@ -1,11 +1,21 @@
 import styles from "./productcard.module.css";
-import products from "../data/products.json";
+import useBundleStore from "../store/useBundleStore";
+import { formatPrice } from "../utils/formatPrice";
 // Make sure this path exactly matches where your camera icon is!
 import camera from "../assets/icon/24/cam/camera.svg";
 import ReviewPanel from "./ReviewPanel";
 import ExtraPanel from "./ExtraPanel";
 
 const SingleProductItem = ({ product }) => {
+  // Selectors — only re-render when this specific item changes
+  const cartItem = useBundleStore((s) => s.cartItems[product.id]);
+  const incrementQty = useBundleStore((s) => s.incrementQty);
+  const decrementQty = useBundleStore((s) => s.decrementQty);
+  const selectColor = useBundleStore((s) => s.selectColor);
+
+  const quantity = cartItem?.quantity ?? 0;
+  const selectedColor = cartItem?.color ?? null;
+
   return (
     <div className={styles.productItem}>
       {product.badge && <span className={styles.badge}>{product.badge}</span>}
@@ -35,7 +45,13 @@ const SingleProductItem = ({ product }) => {
           {product.colors && product.colors.length > 0 && (
             <div className={styles.colorPicker}>
               {product.colors.map((colorObj) => (
-                <button key={colorObj.name} className={styles.colorBtn}>
+                <button
+                  key={colorObj.name}
+                  className={`${styles.colorBtn} ${
+                    selectedColor === colorObj.name ? styles.colorBtnActive : ""
+                  }`}
+                  onClick={() => selectColor(product.id, colorObj.name)}
+                >
                   <img
                     src={colorObj.iconId}
                     alt={colorObj.name}
@@ -50,22 +66,30 @@ const SingleProductItem = ({ product }) => {
 
         <div className={styles.cardBottomRow}>
           <div className={styles.qtyControl}>
-            <button className={styles.qtyBtn}>-</button>
-            <span className={styles.qtyNumber}>
-              {product.title.includes("Pan")
-                ? "2"
-                : product.price === 27.98
-                  ? "1"
-                  : "0"}
-            </span>
-            <button className={styles.qtyBtn}>+</button>
+            <button
+              className={styles.qtyBtn}
+              onClick={() => decrementQty(product.id)}
+            >
+              -
+            </button>
+            <span className={styles.qtyNumber}>{quantity}</span>
+            <button
+              className={styles.qtyBtn}
+              onClick={() => incrementQty(product.id)}
+            >
+              +
+            </button>
           </div>
 
           <div className={styles.pricingCol}>
             {product.oldPrice && (
-              <span className={styles.oldPrice}>${product.oldPrice}</span>
+              <span className={styles.oldPrice}>
+                {formatPrice(product.oldPrice)}
+              </span>
             )}
-            <span className={styles.currentPrice}>${product.price}</span>
+            <span className={styles.currentPrice}>
+              {formatPrice(product.price)}
+            </span>
           </div>
         </div>
       </div>
@@ -74,6 +98,10 @@ const SingleProductItem = ({ product }) => {
 };
 
 function ProductCard() {
+  const catalog = useBundleStore((s) => s.catalog);
+  const selectedCount = useBundleStore((s) => s.getSelectedCameraCount());
+  const setActiveStep = useBundleStore((s) => s.setActiveStep);
+
   return (
     <>
       <h1 className={styles.mobileTitle}>Let's get started!</h1>
@@ -91,11 +119,13 @@ function ProductCard() {
                 <h1 className={styles.title}>Choose your cameras</h1>
               </div>
 
-              <span className={styles.selectedCount}>2 selected &#9652;</span>
+              <span className={styles.selectedCount}>
+                {selectedCount} selected &#9652;
+              </span>
             </div>
 
             <div className={styles.productGrid}>
-              {products.catalog.cameras.map((product, index) => {
+              {catalog.cameras.map((product, index) => {
                 if (index === 4) {
                   return (
                     <div key={product.id} className={styles.centeredRow}>
@@ -107,7 +137,10 @@ function ProductCard() {
               })}
             </div>
 
-            <button className={styles.nextButton}>
+            <button
+              className={styles.nextButton}
+              onClick={() => setActiveStep(2)}
+            >
               Next: Choose your plan
             </button>
           </div>

@@ -1,37 +1,37 @@
 import styles from './reviewpanel.module.css';
-import productsData from '../data/products.json';
+import useBundleStore, { getItemInfo, isCamera, isSensor, isAccessory } from '../store/useBundleStore';
+import { formatPrice } from '../utils/formatPrice';
 import guaranteeIcon from '../assets/icon/24/cam/fast.svg';
 import fastShippingIcon from '../assets/icon/24/cam/fastshipping.svg';
 import guard from '../assets/icon/24/cam/guard.svg';
 
 // Reusable row for Cameras, Sensors, and Accessories
-const CartItem = ({ item }) => {
+const CartItem = ({ id, item }) => {
+  const incrementQty = useBundleStore((s) => s.incrementQty);
+  const decrementQty = useBundleStore((s) => s.decrementQty);
+
+  const info = getItemInfo(id);
+
   return (
     <div className={styles.cartItem}>
       <div className={styles.itemLeft}>
-        {/* If you add image paths to your JSON later, you can map them here */}
         <div className={styles.iconPlaceholder}>
-          {item.image ? <img src={item.image} alt={item.title} /> : 'IMG'}
+          {info.image ? <img src={info.image} alt={info.title} /> : 'IMG'}
         </div>
-        <span className={styles.itemTitle}>{item.title}</span>
+        <span className={styles.itemTitle}>{info.title}</span>
       </div>
       
       <div className={styles.itemRight}>
         {item.quantity !== undefined && (
           <div className={styles.qtyControl}>
-            <button className={styles.qtyBtn}>-</button>
+            <button className={styles.qtyBtn} onClick={() => decrementQty(id)}>-</button>
             <span className={styles.qtyNumber}>{item.quantity}</span>
-            <button className={styles.qtyBtn}>+</button>
+            <button className={styles.qtyBtn} onClick={() => incrementQty(id)}>+</button>
           </div>
         )}
         
         <div className={styles.pricingCol}>
-          {item.oldPrice > 0 && (
-            <span className={styles.oldPrice}>${item.oldPrice.toFixed(2)}</span>
-          )}
-          <span className={item.price === 0 ? styles.freePrice : styles.currentPrice}>
-            {item.price === 0 ? "FREE" : `$${item.price.toFixed(2)}`}
-          </span>
+          {/* We show total price for the line (unit × qty) */}
         </div>
       </div>
     </div>
@@ -39,8 +39,23 @@ const CartItem = ({ item }) => {
 };
 
 export default function ReviewPanel() {
-  // Pulling the initial state directly from your JSON
-  const { cart } = productsData.initialState;
+  const cartItems = useBundleStore((s) => s.cartItems);
+  const plan = useBundleStore((s) => s.plan);
+  const cartTotal = useBundleStore((s) => s.getCartTotal());
+  const oldTotal = useBundleStore((s) => s.getOldTotal());
+  const savings = useBundleStore((s) => s.getSavings());
+  const monthlyPrice = useBundleStore((s) => s.getMonthlyPrice());
+
+  // Split cart items by category, only include items with quantity > 0
+  const cameraEntries = Object.entries(cartItems).filter(
+    ([id, item]) => isCamera(id) && item.quantity > 0
+  );
+  const sensorEntries = Object.entries(cartItems).filter(
+    ([id, item]) => isSensor(id) && item.quantity > 0
+  );
+  const accessoryEntries = Object.entries(cartItems).filter(
+    ([id, item]) => isAccessory(id) && item.quantity > 0
+  );
 
   return (
     <aside className={styles.reviewContainer}>
@@ -54,35 +69,34 @@ export default function ReviewPanel() {
       </div>
 
       {/* Cameras */}
-      <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>CAMERAS</h4>
-        {cart.cameras.map((cam, i) => {
-          // Look up the full item from the catalog using the ID
-          const catalogItem = productsData.catalog.cameras.find(c => c.id === cam.id);
-          
-          return <CartItem key={i} item={{ 
-            ...cam, 
-            title: catalogItem?.title,
-            image: catalogItem?.image // <-- THIS GRABS THE IMAGE FROM THE CATALOG!
-          }} />;
-        })}
-      </div>
+      {cameraEntries.length > 0 && (
+        <div className={styles.section}>
+          <h4 className={styles.sectionTitle}>CAMERAS</h4>
+          {cameraEntries.map(([id, item]) => (
+            <CartItem key={id} id={id} item={item} />
+          ))}
+        </div>
+      )}
 
       {/* Sensors */}
-      <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>SENSORS</h4>
-        {cart.sensors.map((sensor, i) => (
-          <CartItem key={i} item={sensor} />
-        ))}
-      </div>
+      {sensorEntries.length > 0 && (
+        <div className={styles.section}>
+          <h4 className={styles.sectionTitle}>SENSORS</h4>
+          {sensorEntries.map(([id, item]) => (
+            <CartItem key={id} id={id} item={item} />
+          ))}
+        </div>
+      )}
 
       {/* Accessories */}
-      <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>ACCESSORIES</h4>
-        {cart.accessories.map((acc, i) => (
-          <CartItem key={i} item={acc} />
-        ))}
-      </div>
+      {accessoryEntries.length > 0 && (
+        <div className={styles.section}>
+          <h4 className={styles.sectionTitle}>ACCESSORIES</h4>
+          {accessoryEntries.map(([id, item]) => (
+            <CartItem key={id} id={id} item={item} />
+          ))}
+        </div>
+      )}
 
       {/* Plan */}
       <div className={styles.section}>
@@ -93,8 +107,10 @@ export default function ReviewPanel() {
              <span className={styles.planTitle}><b>Cam</b> Unlimited</span>
           </div>
           <div className={styles.pricingCol}>
-            <span className={styles.oldPrice}>${cart.plan.oldPrice}/mo</span>
-            <span className={styles.currentPrice}>${cart.plan.price}/mo</span>
+            {plan.oldPrice && (
+              <span className={styles.oldPrice}>${plan.oldPrice}/mo</span>
+            )}
+            <span className={styles.currentPrice}>${plan.price}/mo</span>
           </div>
         </div>
       </div>
@@ -113,19 +129,24 @@ export default function ReviewPanel() {
         </div>
 
         <div className={styles.totalRow}>
-          {/* You'll replace this with the actual purple badge SVG from Figma */}
            <img src={guaranteeIcon} alt="guarantee icon" />
           
           <div className={styles.totalsRight}>
-            <span className={styles.monthlyBadge}>as low as $19.19/mo</span>
+            <span className={styles.monthlyBadge}>
+              as low as {formatPrice(monthlyPrice)}/mo
+            </span>
             <div className={styles.totalPrices}>
-              <span className={styles.totalOld}>$238.81</span>
-              <span className={styles.totalNew}>$187.89</span>
+              <span className={styles.totalOld}>{formatPrice(oldTotal)}</span>
+              <span className={styles.totalNew}>{formatPrice(cartTotal)}</span>
             </div>
           </div>
         </div>
 
-        <p className={styles.savingsText}>Congrats! You're saving $50.92 on your security bundle!</p>
+        {savings > 0 && (
+          <p className={styles.savingsText}>
+            Congrats! You're saving {formatPrice(savings)} on your security bundle!
+          </p>
+        )}
         
         <button className={styles.checkoutBtn}>Checkout</button>
         <a href="#" className={styles.saveLink}>Save my system for later</a>

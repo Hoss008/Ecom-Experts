@@ -163,6 +163,12 @@
   cursor: pointer;
   letter-spacing: 0.6px;
   line-height: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.colorBtnActive {
+  border-color: var(--primary-purple);
+  box-shadow: 0 0 0 1px var(--primary-purple);
 }
 
 .colorDot {
