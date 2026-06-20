@@ -262,3 +262,46 @@
   margin-bottom: 8px;
   line-height: 24px;
 }
+
+/* TABLET & MOBILE COMPONENT STYLES */
+@media (max-width: 1024px) {
+  .bundleWrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  /* 1. Dissolve the left panel so its children can mix with the right panel */
+  .leftPanel {
+    display: contents; 
+  }
+
+  /* --- 2. SET YOUR CUSTOM MOBILE ORDER HERE --- */
+
+  .extraStepsWrapper {
+    order: 1; /* "The Steps" (2, 3, and 4) go first */
+    width: 100%;
+  }
+
+  .stepcontainer {
+    order: 2; /* "Choosing the cameras" (The Grid) goes second */
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .ReviewPanel {
+    order: 3; /* "The Checkout" (Review Panel) goes last */
+    width: 100%;
+    position: static; 
+    margin-top: 24px;
+  }
+
+  /* 3. Make sure the camera grid collapses to a single column */
+  .productGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .centeredRow .productItem {
+    max-width: 100%;
+  }
+}

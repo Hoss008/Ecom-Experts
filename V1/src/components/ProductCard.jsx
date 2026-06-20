@@ -109,10 +109,12 @@ function ProductCard() {
               Next: Choose your plan
             </button>
           </div>
-          <ExtraPanel />
+          <div className={styles.extraStepsWrapper}>
+            <ExtraPanel />
+          </div>
         </div>
         <aside>
-          <ReviewPanel/>
+          <ReviewPanel />
         </aside>
       </div>
     </>
