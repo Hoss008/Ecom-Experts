@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import productsData from '../data/products.json';
 
 // ---------------------------------------------------------------------------
@@ -113,9 +112,7 @@ export function isAccessory(id) { return accessoryIds.has(id); }
 // ---------------------------------------------------------------------------
 // Store
 // ---------------------------------------------------------------------------
-const useBundleStore = create(
-  persist(
-    (set, get) => ({
+const useBundleStore = create((set, get) => ({
   // ── Catalog (read-only reference) ──────────────────────────────────
   catalog: productsData.catalog,
 
@@ -162,6 +159,13 @@ const useBundleStore = create(
 
   /** Set the active wizard step (1–4) */
   setActiveStep: (step) => set({ activeStep: step }),
+
+  /** Restore a previously saved state from localStorage */
+  rehydrate: (saved) => set({
+    cartItems: saved.cartItems ?? get().cartItems,
+    plan:      saved.plan      ?? get().plan,
+    activeStep: saved.activeStep ?? get().activeStep,
+  }),
 
   // ── Derived / Computed ─────────────────────────────────────────────
 
@@ -213,17 +217,6 @@ const useBundleStore = create(
   getMonthlyPrice: () => {
     return get().getCartTotal() / 12;
   },
-    }),
-    {
-      name: 'ecom-experts-bundle',  // localStorage key
-      // Only persist user-driven state — catalog is always fresh from JSON
-      partialize: (state) => ({
-        cartItems: state.cartItems,
-        plan: state.plan,
-        activeStep: state.activeStep,
-      }),
-    }
-  )
-);
+}));
 
 export default useBundleStore;

@@ -51,12 +51,10 @@ export default function ReviewPanel() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    // persist middleware already auto-saves, but we force-flush here
-    // and give the user clear visual confirmation
     const { cartItems, plan, activeStep } = useBundleStore.getState();
     localStorage.setItem(
       'ecom-experts-bundle',
-      JSON.stringify({ state: { cartItems, plan, activeStep }, version: 0 })
+      JSON.stringify({ cartItems, plan, activeStep })
     );
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
