@@ -100,7 +100,16 @@ const SingleProductItem = ({ product }) => {
 function ProductCard() {
   const catalog = useBundleStore((s) => s.catalog);
   const selectedCount = useBundleStore((s) => s.getSelectedCameraCount());
+  const activeStep = useBundleStore((s) => s.activeStep);
   const setActiveStep = useBundleStore((s) => s.setActiveStep);
+
+  const isOpen = activeStep === 1;
+
+  const handleToggle = () => {
+    // If open, collapse (set to 0 meaning nothing expanded, or keep 1 as sentinel)
+    // We use 0 to mean "all collapsed" — ExtraPanel toggles back to 1, so we need a neutral
+    setActiveStep(isOpen ? 0 : 1);
+  };
 
   return (
     <>
@@ -113,36 +122,53 @@ function ProductCard() {
           <div className={styles.stepcontainer}>
             <span className={styles.stepIndicator}>STEP 1 OF 4</span>
 
-            <div className={styles.titleRow}>
+            {/* Clickable header row */}
+            <div
+              className={styles.titleRow}
+              onClick={handleToggle}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(); }
+              }}
+            >
               <div className={styles.titleLeft}>
                 <img src={camera} alt="camera icon" />
                 <h1 className={styles.title}>Choose your cameras</h1>
               </div>
 
               <span className={styles.selectedCount}>
-                {selectedCount} selected &#9652;
+                {selectedCount} selected{' '}
+                <span className={`${styles.chevron} ${isOpen ? styles.chevronUp : ''}`}>
+                  ▾
+                </span>
               </span>
             </div>
 
-            <div className={styles.productGrid}>
-              {catalog.cameras.map((product, index) => {
-                if (index === 4) {
-                  return (
-                    <div key={product.id} className={styles.centeredRow}>
-                      <SingleProductItem product={product} />
-                    </div>
-                  );
-                }
-                return <SingleProductItem key={product.id} product={product} />;
-              })}
-            </div>
+            {/* Collapsible body */}
+            {isOpen && (
+              <>
+                <div className={styles.productGrid}>
+                  {catalog.cameras.map((product, index) => {
+                    if (index === 4) {
+                      return (
+                        <div key={product.id} className={styles.centeredRow}>
+                          <SingleProductItem product={product} />
+                        </div>
+                      );
+                    }
+                    return <SingleProductItem key={product.id} product={product} />;
+                  })}
+                </div>
 
-            <button
-              className={styles.nextButton}
-              onClick={() => setActiveStep(2)}
-            >
-              Next: Choose your plan
-            </button>
+                <button
+                  className={styles.nextButton}
+                  onClick={(e) => { e.stopPropagation(); setActiveStep(2); }}
+                >
+                  Next: Choose your plan
+                </button>
+              </>
+            )}
           </div>
 
           {/* 2. EXTRA STEPS SECOND */}
@@ -162,3 +188,4 @@ function ProductCard() {
 }
 
 export default ProductCard;
+

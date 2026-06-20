@@ -42,6 +42,8 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  cursor: pointer;
+  user-select: none;
 }
 
 .title {
@@ -62,8 +64,22 @@
   color: var(--primary-purple);
   font-size: 14px;
   font-weight: 400;
-  cursor: pointer;
   line-height: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chevron {
+  display: inline-block;
+  color: var(--primary-purple);
+  font-size: 14px;
+  transition: transform 0.25s ease;
+  transform: rotate(0deg);
+}
+
+.chevronUp {
+  transform: rotate(180deg);
 }
 
 .productGrid {

@@ -109,7 +109,7 @@ const StepPanel = ({ stepNumber, title, iconPath, children }) => {
 
   const isActive = activeStep === stepNumber;
 
-  const handleClick = () => setActiveStep(isActive ? 1 : stepNumber);
+  const handleClick = () => setActiveStep(isActive ? 0 : stepNumber);
 
   return (
     <div className={`${styles.stepWrapper} ${isActive ? styles.stepWrapperActive : ''}`}>
