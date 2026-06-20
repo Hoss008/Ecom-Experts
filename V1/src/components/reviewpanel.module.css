@@ -294,3 +294,12 @@
   text-decoration: underline;
   margin-top: 4px;
 }
+
+/* Add to the bottom of reviewpanel.module.css */
+@media (max-width: 1024px) {
+  .reviewContainer {
+    border-radius: 0;
+    padding-left: 15px;  /* Reduces the massive 32px desktop padding */
+    padding-right: 15px; /* so it fits nicely on small phone screens */
+  }
+}

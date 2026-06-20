@@ -263,40 +263,60 @@
   line-height: 24px;
 }
 
+.mobileTitle {
+  display: none; 
+}
+
 /* TABLET & MOBILE COMPONENT STYLES */
 @media (max-width: 1024px) {
+  /* Stack the two main columns (Left Panel -> Review Panel) */
   .bundleWrapper {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
 
-  /* 1. Dissolve the left panel so its children can mix with the right panel */
+.mobileTitle {
+    display: block; 
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-top: 10px;
+    margin-bottom: 24px;
+  }
+
+  /* Make the left panel full width, and stack its children (Cameras -> Extra Steps) */
   .leftPanel {
-    display: contents; 
-  }
-
-  /* --- 2. SET YOUR CUSTOM MOBILE ORDER HERE --- */
-
-  .extraStepsWrapper {
-    order: 1; /* "The Steps" (2, 3, and 4) go first */
+    display: flex;
+    flex-direction: column;
     width: 100%;
+    max-width: 100%;
   }
 
+  /* Reset margins so the Cameras sit flush at the top */
   .stepcontainer {
-    order: 2; /* "Choosing the cameras" (The Grid) goes second */
+    margin-top: 0;
     width: 100%;
-    margin-top: 24px;
+    border-radius: 0;
+    overflow: hidden;
   }
 
+  /* Add breathing room above the Extra Steps */
+  .extraStepsWrapper {
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  /* Force the Review Panel to take full width at the very bottom */
   .ReviewPanel {
-    order: 3; /* "The Checkout" (Review Panel) goes last */
     width: 100%;
     position: static; 
     margin-top: 24px;
+    display: block;
   }
 
-  /* 3. Make sure the camera grid collapses to a single column */
+  /* Make sure the camera grid collapses to a single column */
   .productGrid {
     grid-template-columns: 1fr;
   }

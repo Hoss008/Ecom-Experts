@@ -1,5 +1,6 @@
 import styles from "./productcard.module.css";
 import products from "../data/products.json";
+// Make sure this path exactly matches where your camera icon is!
 import camera from "../assets/icon/24/cam/camera.svg";
 import ReviewPanel from "./ReviewPanel";
 import ExtraPanel from "./ExtraPanel";
@@ -10,7 +11,6 @@ const SingleProductItem = ({ product }) => {
       {product.badge && <span className={styles.badge}>{product.badge}</span>}
 
       <div className={styles.itemImageContainer}>
-        {/* Directly render the image path from the JSON */}
         {product.image ? (
           <img
             src={product.image}
@@ -41,7 +41,6 @@ const SingleProductItem = ({ product }) => {
                     alt={colorObj.name}
                     className={styles.colorIcon}
                   />
-
                   {colorObj.name}
                 </button>
               ))}
@@ -62,7 +61,6 @@ const SingleProductItem = ({ product }) => {
             <button className={styles.qtyBtn}>+</button>
           </div>
 
-          {/* Pricing */}
           <div className={styles.pricingCol}>
             {product.oldPrice && (
               <span className={styles.oldPrice}>${product.oldPrice}</span>
@@ -74,17 +72,21 @@ const SingleProductItem = ({ product }) => {
     </div>
   );
 };
+
 function ProductCard() {
   return (
     <>
+      <h1 className={styles.mobileTitle}>Let's get started!</h1>
+
       <div className={styles.bundleWrapper}>
+        {/* --- LEFT COLUMN --- */}
         <div className={styles.leftPanel}>
+          {/* 1. CAMERAS FIRST */}
           <div className={styles.stepcontainer}>
             <span className={styles.stepIndicator}>STEP 1 OF 4</span>
 
             <div className={styles.titleRow}>
               <div className={styles.titleLeft}>
-                {/* <img src={camera1} alt="camera icon" /> */}
                 <img src={camera} alt="camera icon" />
                 <h1 className={styles.title}>Choose your cameras</h1>
               </div>
@@ -109,11 +111,16 @@ function ProductCard() {
               Next: Choose your plan
             </button>
           </div>
+
+          {/* 2. EXTRA STEPS SECOND */}
           <div className={styles.extraStepsWrapper}>
             <ExtraPanel />
           </div>
         </div>
-        <aside>
+        {/* --- END OF LEFT COLUMN --- */}
+
+        {/* 3. REVIEW PANEL LAST */}
+        <aside className={styles.ReviewPanel}>
           <ReviewPanel />
         </aside>
       </div>
