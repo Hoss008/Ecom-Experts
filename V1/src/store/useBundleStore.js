@@ -1,13 +1,10 @@
 import { create } from 'zustand';
 import productsData from '../data/products.json';
 
-// ---------------------------------------------------------------------------
-// Helpers: build initial cartItems map from the JSON initialState
-// ---------------------------------------------------------------------------
 function buildInitialCart(initialState) {
   const cart = {};
 
-  // Cameras — store quantity + selected color
+
   for (const cam of initialState.cart.cameras) {
     cart[cam.id] = { quantity: cam.quantity, color: cam.color ?? null };
   }
@@ -25,24 +22,17 @@ function buildInitialCart(initialState) {
   return cart;
 }
 
-// ---------------------------------------------------------------------------
-// Helpers: price lookups
-// ---------------------------------------------------------------------------
 
-// All catalog items in a flat array for easy lookup
+
 const allCatalogItems = [
   ...productsData.catalog.cameras,
-  // Add sensors, accessories catalogs here when they exist in the JSON
 ];
 
-// Quick lookup map: id → catalog item
 const catalogById = {};
 for (const item of allCatalogItems) {
   catalogById[item.id] = item;
 }
 
-// For sensor/accessory items that only exist in initialState (no catalog entry),
-// we store their pricing info separately
 const initialCartPricing = {};
 for (const sensor of productsData.initialState.cart.sensors) {
   initialCartPricing[sensor.id] = {
@@ -61,9 +51,6 @@ for (const acc of productsData.initialState.cart.accessories) {
   };
 }
 
-/**
- * Look up the unit price for a given product id.
- */
 export function getUnitPrice(id) {
   const catalogItem = catalogById[id];
   if (catalogItem) return catalogItem.price;
@@ -72,9 +59,6 @@ export function getUnitPrice(id) {
   return 0;
 }
 
-/**
- * Look up the old (strikethrough) unit price for a given product id.
- */
 export function getOldUnitPrice(id) {
   const catalogItem = catalogById[id];
   if (catalogItem) return catalogItem.oldPrice ?? null;
@@ -83,9 +67,6 @@ export function getOldUnitPrice(id) {
   return null;
 }
 
-/**
- * Get display info (title, image) for a given product id.
- */
 export function getItemInfo(id) {
   const catalogItem = catalogById[id];
   if (catalogItem) {
@@ -98,9 +79,7 @@ export function getItemInfo(id) {
   return { title: id, image: null };
 }
 
-// ---------------------------------------------------------------------------
-// Category helpers — which IDs are cameras / sensors / accessories
-// ---------------------------------------------------------------------------
+
 const cameraIds = new Set(productsData.catalog.cameras.map((c) => c.id));
 const sensorIds = new Set(productsData.initialState.cart.sensors.map((s) => s.id));
 const accessoryIds = new Set(productsData.initialState.cart.accessories.map((a) => a.id));
@@ -109,25 +88,15 @@ export function isCamera(id) { return cameraIds.has(id); }
 export function isSensor(id) { return sensorIds.has(id); }
 export function isAccessory(id) { return accessoryIds.has(id); }
 
-// ---------------------------------------------------------------------------
-// Store
-// ---------------------------------------------------------------------------
 const useBundleStore = create((set, get) => ({
-  // ── Catalog (read-only reference) ──────────────────────────────────
   catalog: productsData.catalog,
 
-  // ── Cart items  { [id]: { quantity, color? } } ─────────────────────
   cartItems: buildInitialCart(productsData.initialState),
 
-  // ── Plan ───────────────────────────────────────────────────────────
   plan: { ...productsData.initialState.cart.plan },
 
-  // ── UI state — which steps are currently expanded ─────────────────
-  openSteps: [1], // step 1 open by default
+  openSteps: [1], 
 
-  // ── Actions ────────────────────────────────────────────────────────
-
-  /** Set quantity for a product (clamped to 0 minimum) */
   setQuantity: (id, qty) =>
     set((state) => ({
       cartItems: {
@@ -136,19 +105,16 @@ const useBundleStore = create((set, get) => ({
       },
     })),
 
-  /** Increment quantity by 1 */
   incrementQty: (id) => {
     const current = get().cartItems[id]?.quantity ?? 0;
     get().setQuantity(id, current + 1);
   },
 
-  /** Decrement quantity by 1 (floor at 0) */
   decrementQty: (id) => {
     const current = get().cartItems[id]?.quantity ?? 0;
     get().setQuantity(id, current - 1);
   },
 
-  /** Select a color for a product */
   selectColor: (productId, colorName) =>
     set((state) => ({
       cartItems: {
@@ -157,7 +123,6 @@ const useBundleStore = create((set, get) => ({
       },
     })),
 
-  /** Toggle a step open/closed independently (multiple can be open) */
   toggleStep: (step) =>
     set((state) => ({
       openSteps: state.openSteps.includes(step)
@@ -165,7 +130,6 @@ const useBundleStore = create((set, get) => ({
         : [...state.openSteps, step],
     })),
 
-  /** Open a step without closing others (used by Next button) */
   openStep: (step) =>
     set((state) => ({
       openSteps: state.openSteps.includes(step)
@@ -173,16 +137,12 @@ const useBundleStore = create((set, get) => ({
         : [...state.openSteps, step],
     })),
 
-  /** Restore a previously saved state from localStorage */
   rehydrate: (saved) => set({
     cartItems: saved.cartItems ?? get().cartItems,
     plan:      saved.plan      ?? get().plan,
     openSteps: saved.openSteps ?? get().openSteps,
   }),
 
-  // ── Derived / Computed ─────────────────────────────────────────────
-
-  /** Total price of all items + plan */
   getCartTotal: () => {
     const { cartItems, plan } = get();
     let total = 0;
