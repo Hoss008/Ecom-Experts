@@ -2,12 +2,11 @@ import styles from './extrapanel.module.css';
 import useBundleStore, { getUnitPrice, getOldUnitPrice, getItemInfo } from '../store/useBundleStore';
 import { formatPrice } from '../utils/formatPrice';
 import waves from '../assets/icon/24/cam/waves.svg';
-import shield from '../assets/icon/24/cam/SHIELD.svg';
+import shield from '../assets/icon/24/cam/shield.svg';
 import extra from '../assets/icon/24/cam/extra.svg';
 import guard from '../assets/icon/24/cam/guard.svg';
 import productsData from '../data/products.json';
 
-// ─── Shared CartItem row (same logic as ReviewPanel) ──────────────────────────
 const ExpandedItem = ({ id }) => {
   const item       = useBundleStore((s) => s.cartItems[id]);
   const incrementQty = useBundleStore((s) => s.incrementQty);
@@ -139,7 +138,6 @@ const StepPanel = ({ stepNumber, title, iconPath, children }) => {
         </div>
       </div>
 
-      {/* ── Expanded content (only when active) ── */}
       {isActive && (
         <div className={styles.expandedBody}>
           {children}
@@ -149,7 +147,6 @@ const StepPanel = ({ stepNumber, title, iconPath, children }) => {
   );
 };
 
-// ─── Main export ──────────────────────────────────────────────────────────────
 export default function RemainingSteps() {
   return (
     <div className={styles.container}>
