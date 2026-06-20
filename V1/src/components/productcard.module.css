@@ -81,6 +81,12 @@
   display: flex;
   gap: 16px;
   position: relative;
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.productItemSelected {
+  border-color: var(--primary-purple);
 }
 
 .badge {

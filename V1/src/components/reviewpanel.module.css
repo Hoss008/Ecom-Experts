@@ -133,7 +133,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  min-width: 55px;
+  min-width: 68px;
+  text-align: right;
 }
 
 .oldPrice {

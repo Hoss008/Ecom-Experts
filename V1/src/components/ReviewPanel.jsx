@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './reviewpanel.module.css';
-import useBundleStore, { getItemInfo, isCamera, isSensor, isAccessory } from '../store/useBundleStore';
+import useBundleStore, { getItemInfo, isCamera, isSensor, isAccessory, getUnitPrice, getOldUnitPrice } from '../store/useBundleStore';
 import { formatPrice } from '../utils/formatPrice';
 import guaranteeIcon from '../assets/icon/24/cam/fast.svg';
 import fastShippingIcon from '../assets/icon/24/cam/fastshipping.svg';
@@ -12,6 +12,11 @@ const CartItem = ({ id, item }) => {
   const decrementQty = useBundleStore((s) => s.decrementQty);
 
   const info = getItemInfo(id);
+  const unitPrice    = getUnitPrice(id);
+  const oldUnitPrice = getOldUnitPrice(id);
+  const lineTotal    = item.quantity * unitPrice;
+  const lineOldTotal = oldUnitPrice != null ? item.quantity * oldUnitPrice : null;
+  const isFree       = unitPrice === 0;
 
   return (
     <div className={styles.cartItem}>
@@ -32,7 +37,12 @@ const CartItem = ({ id, item }) => {
         )}
         
         <div className={styles.pricingCol}>
-          {/* We show total price for the line (unit × qty) */}
+          {lineOldTotal != null && (
+            <span className={styles.oldPrice}>{formatPrice(lineOldTotal)}</span>
+          )}
+          <span className={isFree ? styles.freePrice : styles.currentPrice}>
+            {isFree ? 'FREE' : formatPrice(lineTotal)}
+          </span>
         </div>
       </div>
     </div>

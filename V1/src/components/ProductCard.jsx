@@ -17,7 +17,7 @@ const SingleProductItem = ({ product }) => {
   const selectedColor = cartItem?.color ?? null;
 
   return (
-    <div className={styles.productItem}>
+    <div className={`${styles.productItem} ${quantity > 0 ? styles.productItemSelected : ''}`}>
       {product.badge && <span className={styles.badge}>{product.badge}</span>}
 
       <div className={styles.itemImageContainer}>

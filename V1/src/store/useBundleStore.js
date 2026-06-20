@@ -64,7 +64,7 @@ for (const acc of productsData.initialState.cart.accessories) {
 /**
  * Look up the unit price for a given product id.
  */
-function getUnitPrice(id) {
+export function getUnitPrice(id) {
   const catalogItem = catalogById[id];
   if (catalogItem) return catalogItem.price;
   const extra = initialCartPricing[id];
@@ -75,7 +75,7 @@ function getUnitPrice(id) {
 /**
  * Look up the old (strikethrough) unit price for a given product id.
  */
-function getOldUnitPrice(id) {
+export function getOldUnitPrice(id) {
   const catalogItem = catalogById[id];
   if (catalogItem) return catalogItem.oldPrice ?? null;
   const extra = initialCartPricing[id];
