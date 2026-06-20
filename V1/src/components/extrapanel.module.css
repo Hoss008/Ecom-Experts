@@ -5,28 +5,16 @@
   margin-top: 24px;
 }
 
-/* ── Step wrapper ──────────────────────────────────────────────── */
 .stepWrapper {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 0.5px solid #1F1F1F;
+  margin-bottom: 24px; 
   transition: background-color 0.2s ease;
 }
 
-.stepWrapper:first-child {
-  border-top: 1px solid #e2e8f0;
-}
-
-.stepWrapperActive {
-  background-color: rgba(99, 102, 241, 0.04);
-  border-radius: 8px;
-  padding: 0 12px;
-  margin: 0 -12px;
-}
-
-/* ── Clickable header area ─────────────────────────────────────── */
 .stepHeader {
-  padding: 24px 0;
+  padding-bottom: 24px; 
   cursor: pointer;
   user-select: none;
 }
@@ -37,7 +25,7 @@
   letter-spacing: 1px;
   color: var(--text-muted);
   text-transform: uppercase;
-  margin-bottom: 16px;
+  margin-bottom: 5px; 
   display: block;
 }
 
@@ -45,8 +33,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  
+  /* 4. Add the TOP line here, sitting directly under the indicator text! */
+  border-top: 0.5px solid #1F1F1F;
+  
+  /* Breathing room inside the top line */
+  padding-top: 24px; 
 }
-
 .stepLeft {
   display: flex;
   align-items: center;
