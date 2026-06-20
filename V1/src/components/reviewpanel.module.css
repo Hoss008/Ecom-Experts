@@ -78,6 +78,12 @@
   color: #cbd5e1;
   border: 1px solid #e2e8f0;
 }
+.iconPlaceholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Keeps the camera from stretching */
+  padding: 4px; /* Gives a little breathing room inside the box */
+}
 
 .itemTitle {
   font-size: 14px;

@@ -1,0 +1,60 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 24px; /* Adds space between Step 1 box and this list */
+}
+
+.stepWrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  border-bottom: 1px solid #e2e8f0; /* The light grey divider line */
+}
+
+/* Add a top border only to the very first step to enclose the list */
+.stepWrapper:first-child {
+  border-top: 1px solid #e2e8f0;
+}
+
+.stepIndicator {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: var(--text-muted); /* Uses your global dark grey */
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.stepContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer; /* Makes it feel clickable */
+}
+
+.stepLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stepIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.stepTitle {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-dark); /* Uses your global almost-black */
+  margin: 0;
+}
+
+.chevron {
+  color: var(--primary-purple); /* Colors the inline SVG stroke */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

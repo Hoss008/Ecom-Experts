@@ -57,9 +57,14 @@ export default function ReviewPanel() {
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>CAMERAS</h4>
         {cart.cameras.map((cam, i) => {
-          // Look up the full title from the catalog using the ID
+          // Look up the full item from the catalog using the ID
           const catalogItem = productsData.catalog.cameras.find(c => c.id === cam.id);
-          return <CartItem key={i} item={{ ...cam, title: catalogItem?.title }} />;
+          
+          return <CartItem key={i} item={{ 
+            ...cam, 
+            title: catalogItem?.title,
+            image: catalogItem?.image // <-- THIS GRABS THE IMAGE FROM THE CATALOG!
+          }} />;
         })}
       </div>
 
