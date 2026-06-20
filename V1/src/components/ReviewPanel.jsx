@@ -61,10 +61,10 @@ export default function ReviewPanel() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    const { cartItems, plan, activeStep } = useBundleStore.getState();
+    const { cartItems, plan, openSteps } = useBundleStore.getState();
     localStorage.setItem(
       'ecom-experts-bundle',
-      JSON.stringify({ cartItems, plan, activeStep })
+      JSON.stringify({ cartItems, plan, openSteps })
     );
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);

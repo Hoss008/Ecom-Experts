@@ -100,16 +100,13 @@ const SingleProductItem = ({ product }) => {
 function ProductCard() {
   const catalog = useBundleStore((s) => s.catalog);
   const selectedCount = useBundleStore((s) => s.getSelectedCameraCount());
-  const activeStep = useBundleStore((s) => s.activeStep);
-  const setActiveStep = useBundleStore((s) => s.setActiveStep);
+  const openSteps = useBundleStore((s) => s.openSteps);
+  const toggleStep = useBundleStore((s) => s.toggleStep);
+  const openStep  = useBundleStore((s) => s.openStep);
 
-  const isOpen = activeStep === 1;
+  const isOpen = openSteps.includes(1);
 
-  const handleToggle = () => {
-    // If open, collapse (set to 0 meaning nothing expanded, or keep 1 as sentinel)
-    // We use 0 to mean "all collapsed" — ExtraPanel toggles back to 1, so we need a neutral
-    setActiveStep(isOpen ? 0 : 1);
-  };
+  const handleToggle = () => toggleStep(1);
 
   return (
     <>
@@ -163,7 +160,7 @@ function ProductCard() {
 
                 <button
                   className={styles.nextButton}
-                  onClick={(e) => { e.stopPropagation(); setActiveStep(2); }}
+                  onClick={(e) => { e.stopPropagation(); openStep(2); }}
                 >
                   Next: Choose your plan
                 </button>

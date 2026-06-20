@@ -122,8 +122,8 @@ const useBundleStore = create((set, get) => ({
   // ── Plan ───────────────────────────────────────────────────────────
   plan: { ...productsData.initialState.cart.plan },
 
-  // ── UI state ───────────────────────────────────────────────────────
-  activeStep: 1,
+  // ── UI state — which steps are currently expanded ─────────────────
+  openSteps: [1], // step 1 open by default
 
   // ── Actions ────────────────────────────────────────────────────────
 
@@ -157,14 +157,27 @@ const useBundleStore = create((set, get) => ({
       },
     })),
 
-  /** Set the active wizard step (1–4) */
-  setActiveStep: (step) => set({ activeStep: step }),
+  /** Toggle a step open/closed independently (multiple can be open) */
+  toggleStep: (step) =>
+    set((state) => ({
+      openSteps: state.openSteps.includes(step)
+        ? state.openSteps.filter((s) => s !== step)
+        : [...state.openSteps, step],
+    })),
+
+  /** Open a step without closing others (used by Next button) */
+  openStep: (step) =>
+    set((state) => ({
+      openSteps: state.openSteps.includes(step)
+        ? state.openSteps
+        : [...state.openSteps, step],
+    })),
 
   /** Restore a previously saved state from localStorage */
   rehydrate: (saved) => set({
     cartItems: saved.cartItems ?? get().cartItems,
     plan:      saved.plan      ?? get().plan,
-    activeStep: saved.activeStep ?? get().activeStep,
+    openSteps: saved.openSteps ?? get().openSteps,
   }),
 
   // ── Derived / Computed ─────────────────────────────────────────────

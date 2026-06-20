@@ -104,12 +104,12 @@ const AccessoriesContent = () => {
 
 // ─── Step header (title row + chevron) ────────────────────────────────────────
 const StepPanel = ({ stepNumber, title, iconPath, children }) => {
-  const activeStep   = useBundleStore((s) => s.activeStep);
-  const setActiveStep = useBundleStore((s) => s.setActiveStep);
+  const openSteps  = useBundleStore((s) => s.openSteps);
+  const toggleStep = useBundleStore((s) => s.toggleStep);
 
-  const isActive = activeStep === stepNumber;
+  const isActive = openSteps.includes(stepNumber);
 
-  const handleClick = () => setActiveStep(isActive ? 0 : stepNumber);
+  const handleClick = () => toggleStep(stepNumber);
 
   return (
     <div className={`${styles.stepWrapper} ${isActive ? styles.stepWrapperActive : ''}`}>
