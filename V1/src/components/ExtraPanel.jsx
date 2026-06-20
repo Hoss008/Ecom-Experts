@@ -1,6 +1,6 @@
 import styles from './extrapanel.module.css';
 import waves from '../assets/icon/24/cam/waves.svg';
-import shield from '../assets/icon/24/cam/shield.svg';
+import shield from '../assets/icon/24/cam/SHIELD.svg';
 import extra from '../assets/icon/24/cam/extra.svg';
 
 // Reusable component for a single collapsed step
