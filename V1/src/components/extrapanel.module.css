@@ -2,35 +2,49 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: 24px; 
+  margin-top: 24px;
 }
 
+/* ── Step wrapper ──────────────────────────────────────────────── */
 .stepWrapper {
   display: flex;
   flex-direction: column;
-  padding: 24px 0;
-  border-bottom: 1px solid #e2e8f0; 
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease;
 }
 
-/* Add a top border only to the very first step to enclose the list */
 .stepWrapper:first-child {
   border-top: 1px solid #e2e8f0;
+}
+
+.stepWrapperActive {
+  background-color: rgba(99, 102, 241, 0.04);
+  border-radius: 8px;
+  padding: 0 12px;
+  margin: 0 -12px;
+}
+
+/* ── Clickable header area ─────────────────────────────────────── */
+.stepHeader {
+  padding: 24px 0;
+  cursor: pointer;
+  user-select: none;
 }
 
 .stepIndicator {
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 1px;
-  color: var(--text-muted); /* Uses your global dark grey */
+  color: var(--text-muted);
   text-transform: uppercase;
   margin-bottom: 16px;
+  display: block;
 }
 
 .stepContent {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer; /* Makes it feel clickable */
 }
 
 .stepLeft {
@@ -48,12 +62,12 @@
 .stepTitle {
   font-size: 22px;
   font-weight: 500;
-  color: var(--text-dark); /* Uses your global almost-black */
+  color: var(--text-dark);
   margin: 0;
 }
 
 .chevron {
-  color: var(--primary-purple); 
+  color: var(--primary-purple);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,9 +78,121 @@
   transform: rotate(180deg);
 }
 
-.stepWrapperActive {
-  background-color: rgba(99, 102, 241, 0.04);
+/* ── Expanded body ─────────────────────────────────────────────── */
+.expandedBody {
+  padding-bottom: 20px;
+}
+
+.expandedContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Individual item row (mirrors ReviewPanel CartItem) ────────── */
+.expandedItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemThumb {
+  width: 40px;
+  height: 40px;
+  background-color: #ffffff;
   border-radius: 8px;
-  padding: 24px 12px;
-  margin: 0 -12px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.itemThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.itemTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.3;
+}
+
+.itemRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+/* ── Qty control ───────────────────────────────────────────────── */
+.qtyControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qtyBtn {
+  font-family: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  background-color: var(--light-grey);
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.qtyNumber {
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 14px;
+  text-align: center;
+}
+
+/* ── Pricing ───────────────────────────────────────────────────── */
+.pricingCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 64px;
+  text-align: right;
+}
+
+.oldPrice {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.currentPrice {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-purple);
+}
+
+.freePrice {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-purple);
+  text-transform: uppercase;
 }
