@@ -137,10 +137,11 @@ const useBundleStore = create((set, get) => ({
         : [...state.openSteps, step],
     })),
 
+  /** Restore a previously saved state from localStorage */
   rehydrate: (saved) => set({
     cartItems: saved.cartItems ?? get().cartItems,
     plan:      saved.plan      ?? get().plan,
-    openSteps: saved.openSteps ?? get().openSteps,
+    // openSteps intentionally NOT restored — step UI always resets to default
   }),
 
   getCartTotal: () => {

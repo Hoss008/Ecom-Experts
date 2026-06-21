@@ -1,13 +1,11 @@
 import styles from "./productcard.module.css";
 import useBundleStore from "../store/useBundleStore";
 import { formatPrice } from "../utils/formatPrice";
-// Make sure this path exactly matches where your camera icon is!
 import camera from "../assets/icon/24/cam/camera.svg";
 import ReviewPanel from "./ReviewPanel";
 import ExtraPanel from "./ExtraPanel";
 
 const SingleProductItem = ({ product }) => {
-  // Selectors — only re-render when this specific item changes
   const cartItem = useBundleStore((s) => s.cartItems[product.id]);
   const incrementQty = useBundleStore((s) => s.incrementQty);
   const decrementQty = useBundleStore((s) => s.decrementQty);
@@ -17,7 +15,9 @@ const SingleProductItem = ({ product }) => {
   const selectedColor = cartItem?.color ?? null;
 
   return (
-    <div className={`${styles.productItem} ${quantity > 0 ? styles.productItemSelected : ''}`}>
+    <div
+      className={`${styles.productItem} ${quantity > 0 ? styles.productItemSelected : ""}`}
+    >
       {product.badge && <span className={styles.badge}>{product.badge}</span>}
 
       <div className={styles.itemImageContainer}>
@@ -102,7 +102,7 @@ function ProductCard() {
   const selectedCount = useBundleStore((s) => s.getSelectedCameraCount());
   const openSteps = useBundleStore((s) => s.openSteps);
   const toggleStep = useBundleStore((s) => s.toggleStep);
-  const openStep  = useBundleStore((s) => s.openStep);
+  const openStep = useBundleStore((s) => s.openStep);
 
   const isOpen = openSteps.includes(1);
 
@@ -115,8 +115,10 @@ function ProductCard() {
       <div className={styles.bundleWrapper}>
         {/* --- LEFT COLUMN --- */}
         <div className={styles.leftPanel}>
-          {/* 1. CAMERAS FIRST */}
-          <div className={styles.stepcontainer}>
+
+          <div
+            className={`${styles.stepcontainer} ${!isOpen ? styles.isClosed : ""}`}
+          >
             <span className={styles.stepIndicator}>STEP 1 OF 4</span>
 
             {/* Clickable header row */}
@@ -126,7 +128,10 @@ function ProductCard() {
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(); }
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleToggle();
+                }
               }}
             >
               <div className={styles.titleLeft}>
@@ -135,8 +140,11 @@ function ProductCard() {
               </div>
 
               <span className={styles.selectedCount}>
-                {selectedCount} selected{' '}
-                <span className={`${styles.chevron} ${isOpen ? styles.chevronUp : ''}`}>
+                {selectedCount} selected{" "}
+                {/* 2. Used isOpen here, which is correct! */}
+                <span
+                  className={`${styles.chevron} ${isOpen ? styles.chevronUp : ""}`}
+                >
                   ▾
                 </span>
               </span>
@@ -154,13 +162,18 @@ function ProductCard() {
                         </div>
                       );
                     }
-                    return <SingleProductItem key={product.id} product={product} />;
+                    return (
+                      <SingleProductItem key={product.id} product={product} />
+                    );
                   })}
                 </div>
 
                 <button
                   className={styles.nextButton}
-                  onClick={(e) => { e.stopPropagation(); openStep(2); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openStep(2);
+                  }}
                 >
                   Next: Choose your plan
                 </button>
@@ -173,9 +186,6 @@ function ProductCard() {
             <ExtraPanel />
           </div>
         </div>
-        {/* --- END OF LEFT COLUMN --- */}
-
-        {/* 3. REVIEW PANEL LAST */}
         <aside className={styles.ReviewPanel}>
           <ReviewPanel />
         </aside>
@@ -185,4 +195,3 @@ function ProductCard() {
 }
 
 export default ProductCard;
-

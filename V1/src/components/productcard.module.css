@@ -12,13 +12,27 @@
 }
 
 
+.ReviewPanel {
+  align-self: flex-start;   /* top-aligns with left panel, never stretches */
+  flex-shrink: 0;
+  width: 380px;
+}
+
 .stepcontainer {
   background-color: var(--background);
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  padding: 20px 15px 20px 15px;
+  padding: 20px 15px 24px 15px;
   gap: 15px;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.stepcontainer.isClosed {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 16px 15px;
+  gap: 0;
 }
 
 .stepIndicator {
@@ -50,7 +64,7 @@
   padding-bottom: 3px;
   margin: 0;
   font-size: 22px;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--text-dark);
 }
 
@@ -109,7 +123,7 @@
   position: absolute;
   top: 11px; 
   left: 11px;
-  background-color: var(--primary-purple); /* Or #4f46e5 */
+  background-color: var(--primary-purple); 
   color: white;
   font-size: 11px;
   font-weight: 700;
@@ -153,7 +167,7 @@
 .description {
   margin: 0 0 12px 0;
   font-size: 12px;
-  color: var(--text-muted); /* Or #64748b */
+  color: var(--text-muted); 
   line-height: 1.4;
 }
 
@@ -189,15 +203,16 @@
 }
 
 .colorBtnActive {
-  border-color: var(--primary-purple);
-  box-shadow: 0 0 0 1px var(--primary-purple);
+  border-color: #00A389; 
+  box-shadow: 0 0 0 1px #00A389;
+  background-color: rgba(0, 163, 137, 0.06); 
 }
 
 .colorDot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #e1cbcb;
 }
 .white {
   background-color: #ffffff;
@@ -216,7 +231,6 @@
   margin-top: auto;
 }
 
-/* Quantity Controls */
 .qtyControl {
   display: flex;
   align-items: center;
@@ -244,7 +258,6 @@
   font-weight: 500;
 }
 
-/* Pricing */
 .pricingCol {
   display: flex;
   flex-direction: column;
@@ -255,7 +268,7 @@
 .oldPrice {
   text-decoration: line-through;
   color: #D8392B; 
-  font-size: 12px;
+  font-size: 16px;
   margin-bottom: 2px;
 }
 
