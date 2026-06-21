@@ -1,22 +1,56 @@
+import { useState } from "react";
 import styles from "./productcard.module.css";
-import useBundleStore from "../store/useBundleStore";
+import useBundleStore, { makeCartKey } from "../store/useBundleStore";
 import { formatPrice } from "../utils/formatPrice";
 import camera from "../assets/icon/24/cam/camera.svg";
 import ReviewPanel from "./ReviewPanel";
 import ExtraPanel from "./ExtraPanel";
 
+// ---------------------------------------------------------------------------
+// Single camera card — handles per-variant quantity selection
+// ---------------------------------------------------------------------------
 const SingleProductItem = ({ product }) => {
-  const cartItem = useBundleStore((s) => s.cartItems[product.id]);
+  const hasVariants = product.colors && product.colors.length > 0;
+
+  /**
+   * activeColor is LOCAL UI state — it controls which chip is highlighted
+   * and which variant's qty the stepper reads/writes.
+   * It does NOT clear other variants' quantities when changed.
+   */
+  const [activeColor, setActiveColor] = useState(() => {
+    if (!hasVariants) return null;
+    // Prefer the color that was pre-seeded with qty > 0
+    for (const c of product.colors) {
+      const key = makeCartKey(product.id, c.name);
+      const qty = useBundleStore.getState().cartItems[key]?.quantity ?? 0;
+      if (qty > 0) return c.name;
+    }
+    return product.colors[0].name;
+  });
+
+  // The cart key the stepper is currently bound to
+  const activeKey = hasVariants ? makeCartKey(product.id, activeColor) : product.id;
+
+  // Qty for the active variant (what the stepper shows)
+  const cartItem    = useBundleStore((s) => s.cartItems[activeKey]);
   const incrementQty = useBundleStore((s) => s.incrementQty);
   const decrementQty = useBundleStore((s) => s.decrementQty);
-  const selectColor = useBundleStore((s) => s.selectColor);
+
+  // All cart items — needed for per-chip badges & purple border
+  const allCartItems = useBundleStore((s) => s.cartItems);
 
   const quantity = cartItem?.quantity ?? 0;
-  const selectedColor = cartItem?.color ?? null;
+
+  // Purple border = ANY variant of this product has qty > 0
+  const isSelected = hasVariants
+    ? product.colors.some(
+        (c) => (allCartItems[makeCartKey(product.id, c.name)]?.quantity ?? 0) > 0
+      )
+    : quantity > 0;
 
   return (
     <div
-      className={`${styles.productItem} ${quantity > 0 ? styles.productItemSelected : ""}`}
+      className={`${styles.productItem} ${isSelected ? styles.productItemSelected : ""}`}
     >
       {product.badge && <span className={styles.badge}>{product.badge}</span>}
 
@@ -42,24 +76,32 @@ const SingleProductItem = ({ product }) => {
             </a>
           </p>
 
-          {product.colors && product.colors.length > 0 && (
+          {hasVariants && (
             <div className={styles.colorPicker}>
-              {product.colors.map((colorObj) => (
-                <button
-                  key={colorObj.name}
-                  className={`${styles.colorBtn} ${
-                    selectedColor === colorObj.name ? styles.colorBtnActive : ""
-                  }`}
-                  onClick={() => selectColor(product.id, colorObj.name)}
-                >
-                  <img
-                    src={colorObj.iconId}
-                    alt={colorObj.name}
-                    className={styles.colorIcon}
-                  />
-                  {colorObj.name}
-                </button>
-              ))}
+              {product.colors.map((colorObj) => {
+                const variantKey = makeCartKey(product.id, colorObj.name);
+                const variantQty = allCartItems[variantKey]?.quantity ?? 0;
+                return (
+                  <button
+                    key={colorObj.name}
+                    className={`${styles.colorBtn} ${
+                      activeColor === colorObj.name ? styles.colorBtnActive : ""
+                    }`}
+                    onClick={() => setActiveColor(colorObj.name)}
+                  >
+                    <img
+                      src={colorObj.iconId}
+                      alt={colorObj.name}
+                      className={styles.colorIcon}
+                    />
+                    {colorObj.name}
+                    {/* Badge shows how many of THIS variant are in cart */}
+                    {variantQty > 0 && (
+                      <span className={styles.variantQtyBadge}>{variantQty}</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -67,15 +109,18 @@ const SingleProductItem = ({ product }) => {
         <div className={styles.cardBottomRow}>
           <div className={styles.qtyControl}>
             <button
-              className={styles.qtyBtn}
-              onClick={() => decrementQty(product.id)}
+              className={`${styles.qtyBtn} ${quantity === 0 ? styles.qtyBtnDisabled : ""}`}
+              onClick={() => decrementQty(activeKey)}
+              disabled={quantity === 0}
+              aria-label="Decrease quantity"
             >
               -
             </button>
             <span className={styles.qtyNumber}>{quantity}</span>
             <button
               className={styles.qtyBtn}
-              onClick={() => incrementQty(product.id)}
+              onClick={() => incrementQty(activeKey)}
+              aria-label="Increase quantity"
             >
               +
             </button>
@@ -83,13 +128,9 @@ const SingleProductItem = ({ product }) => {
 
           <div className={styles.pricingCol}>
             {product.oldPrice && (
-              <span className={styles.oldPrice}>
-                {formatPrice(product.oldPrice)}
-              </span>
+              <span className={styles.oldPrice}>{formatPrice(product.oldPrice)}</span>
             )}
-            <span className={styles.currentPrice}>
-              {formatPrice(product.price)}
-            </span>
+            <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
           </div>
         </div>
       </div>
@@ -97,12 +138,15 @@ const SingleProductItem = ({ product }) => {
   );
 };
 
+// ---------------------------------------------------------------------------
+// Main layout — left panel (step 1 + extra steps) + review panel
+// ---------------------------------------------------------------------------
 function ProductCard() {
-  const catalog = useBundleStore((s) => s.catalog);
+  const catalog      = useBundleStore((s) => s.catalog);
   const selectedCount = useBundleStore((s) => s.getSelectedCameraCount());
-  const openSteps = useBundleStore((s) => s.openSteps);
-  const toggleStep = useBundleStore((s) => s.toggleStep);
-  const openStep = useBundleStore((s) => s.openStep);
+  const openSteps    = useBundleStore((s) => s.openSteps);
+  const toggleStep   = useBundleStore((s) => s.toggleStep);
+  const openStep     = useBundleStore((s) => s.openStep);
 
   const isOpen = openSteps.includes(1);
 
@@ -110,10 +154,10 @@ function ProductCard() {
 
   return (
     <>
-      <h1 className={styles.mobileTitle}>Let's get started!</h1>
+      <h1 className={styles.mobileTitle}>Let&apos;s get started!</h1>
 
       <div className={styles.bundleWrapper}>
-        {/* --- LEFT COLUMN --- */}
+        {/* ── LEFT COLUMN ── */}
         <div className={styles.leftPanel}>
 
           <div
@@ -127,6 +171,7 @@ function ProductCard() {
               onClick={handleToggle}
               role="button"
               tabIndex={0}
+              aria-expanded={isOpen}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
@@ -141,7 +186,6 @@ function ProductCard() {
 
               <span className={styles.selectedCount}>
                 {selectedCount} selected{" "}
-                {/* 2. Used isOpen here, which is correct! */}
                 <span
                   className={`${styles.chevron} ${isOpen ? styles.chevronUp : ""}`}
                 >
@@ -181,11 +225,13 @@ function ProductCard() {
             )}
           </div>
 
-          {/* 2. EXTRA STEPS SECOND */}
+          {/* Steps 2–4 */}
           <div className={styles.extraStepsWrapper}>
             <ExtraPanel />
           </div>
         </div>
+
+        {/* ── REVIEW PANEL ── */}
         <aside className={styles.ReviewPanel}>
           <ReviewPanel />
         </aside>

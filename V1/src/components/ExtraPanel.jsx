@@ -102,7 +102,7 @@ const AccessoriesContent = () => {
 };
 
 // ─── Step header (title row + chevron) ────────────────────────────────────────
-const StepPanel = ({ stepNumber, title, iconPath, children }) => {
+const StepPanel = ({ stepNumber, title, iconPath, nextLabel, onNext, children }) => {
   const openSteps  = useBundleStore((s) => s.openSteps);
   const toggleStep = useBundleStore((s) => s.toggleStep);
 
@@ -118,6 +118,7 @@ const StepPanel = ({ stepNumber, title, iconPath, children }) => {
         onClick={handleClick}
         role="button"
         tabIndex={0}
+        aria-expanded={isActive}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); }
         }}
@@ -141,6 +142,14 @@ const StepPanel = ({ stepNumber, title, iconPath, children }) => {
       {isActive && (
         <div className={styles.expandedBody}>
           {children}
+          {nextLabel && onNext && (
+            <button
+              className={styles.nextButton}
+              onClick={(e) => { e.stopPropagation(); onNext(); }}
+            >
+              {nextLabel}
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -148,16 +157,31 @@ const StepPanel = ({ stepNumber, title, iconPath, children }) => {
 };
 
 export default function RemainingSteps() {
+  const openStep = useBundleStore((s) => s.openStep);
+
   return (
     <div className={styles.container}>
-      <StepPanel stepNumber={2} title="Choose your plan" iconPath={shield}>
+      <StepPanel
+        stepNumber={2}
+        title="Choose your plan"
+        iconPath={shield}
+        nextLabel="Next: Choose your sensors"
+        onNext={() => openStep(3)}
+      >
         <PlanContent />
       </StepPanel>
 
-      <StepPanel stepNumber={3} title="Choose your sensors" iconPath={waves}>
+      <StepPanel
+        stepNumber={3}
+        title="Choose your sensors"
+        iconPath={waves}
+        nextLabel="Next: Add extra protection"
+        onNext={() => openStep(4)}
+      >
         <SensorsContent />
       </StepPanel>
 
+      {/* Step 4 is the last step — no Next button */}
       <StepPanel stepNumber={4} title="Add extra protection" iconPath={extra}>
         <AccessoriesContent />
       </StepPanel>

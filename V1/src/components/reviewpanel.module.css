@@ -18,7 +18,7 @@
 
 .title {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-dark);
   margin: 12px 0 8px 0;
 }
@@ -43,7 +43,7 @@
   color: #94a3b8;
   letter-spacing: 0.5px;
   margin: 0 0 16px 0;
-  font-weight: 500;
+  font-weight: 400;
   text-transform: uppercase;
 }
 
@@ -285,6 +285,15 @@
 
 .checkoutBtn:hover {
   background-color: var(--primary-purple-hover);
+}
+
+.checkoutBtnDone {
+  background-color: #10b981;
+  cursor: default;
+}
+
+.checkoutBtnDone:hover {
+  background-color: #10b981;
 }
 
 .saveLink {

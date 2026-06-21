@@ -58,6 +58,7 @@ export default function ReviewPanel() {
   const monthlyPrice = useBundleStore((s) => s.getMonthlyPrice());
 
   const [saved, setSaved] = useState(false);
+  const [checkedOut, setCheckedOut] = useState(false);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -68,6 +69,11 @@ export default function ReviewPanel() {
     );
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleCheckout = () => {
+    setCheckedOut(true);
+    setTimeout(() => setCheckedOut(false), 2500);
   };
 
   // Split cart items by category, only include items with quantity > 0
@@ -172,7 +178,13 @@ export default function ReviewPanel() {
           </p>
         )}
         
-        <button className={styles.checkoutBtn}>Checkout</button>
+        <button
+          className={`${styles.checkoutBtn} ${checkedOut ? styles.checkoutBtnDone : ''}`}
+          onClick={handleCheckout}
+          disabled={checkedOut}
+        >
+          {checkedOut ? '✓ Order placed!' : 'Checkout'}
+        </button>
         <a
           href="#"
           className={`${styles.saveLink} ${saved ? styles.saveLinkSaved : ''}`}

@@ -1,20 +1,54 @@
 import { create } from 'zustand';
 import productsData from '../data/products.json';
 
-function buildInitialCart(initialState) {
+// ---------------------------------------------------------------------------
+// Key format
+//   With variants:    "cam-v4::White", "cam-v4::Black"
+//   Without variants: "duo-cam-doorbell"
+//   Sensors/Acc:      "sense-motion"
+// ---------------------------------------------------------------------------
+export function parseCartKey(key) {
+  const sep = key.indexOf('::');
+  if (sep === -1) return { productId: key, variant: null };
+  return { productId: key.slice(0, sep), variant: key.slice(sep + 2) };
+}
+
+export function makeCartKey(productId, colorName) {
+  return colorName ? `${productId}::${colorName}` : productId;
+}
+
+// ---------------------------------------------------------------------------
+// Build initial cart — one slot per product+variant combo
+// ---------------------------------------------------------------------------
+function buildInitialCart(initialState, catalog) {
   const cart = {};
 
+  // Map of seeded cameras { id -> { quantity, color } }
+  const seededCameras = new Map(
+    initialState.cart.cameras.map((c) => [c.id, c])
+  );
 
-  for (const cam of initialState.cart.cameras) {
-    cart[cam.id] = { quantity: cam.quantity, color: cam.color ?? null };
+  for (const cam of catalog.cameras) {
+    if (cam.colors && cam.colors.length > 0) {
+      // Create one entry per color variant
+      for (const color of cam.colors) {
+        const key = makeCartKey(cam.id, color.name);
+        const seeded = seededCameras.get(cam.id);
+        // Only seed qty on the pre-selected color; all others start at 0
+        const qty = seeded && seeded.color === color.name ? seeded.quantity : 0;
+        cart[key] = { quantity: qty };
+      }
+    } else {
+      // No variants — bare productId
+      const seeded = seededCameras.get(cam.id);
+      cart[cam.id] = { quantity: seeded?.quantity ?? 0 };
+    }
   }
 
-  // Sensors
+  // Sensors and accessories (no color variants)
   for (const sensor of initialState.cart.sensors) {
     cart[sensor.id] = { quantity: sensor.quantity };
   }
-
-  // Accessories
   for (const acc of initialState.cart.accessories) {
     cart[acc.id] = { quantity: acc.quantity };
   }
@@ -22,15 +56,12 @@ function buildInitialCart(initialState) {
   return cart;
 }
 
-
-
-const allCatalogItems = [
-  ...productsData.catalog.cameras,
-];
-
+// ---------------------------------------------------------------------------
+// Lookup tables (indexed by bare productId)
+// ---------------------------------------------------------------------------
 const catalogById = {};
-for (const item of allCatalogItems) {
-  catalogById[item.id] = item;
+for (const cam of productsData.catalog.cameras) {
+  catalogById[cam.id] = cam;
 }
 
 const initialCartPricing = {};
@@ -51,77 +82,81 @@ for (const acc of productsData.initialState.cart.accessories) {
   };
 }
 
-export function getUnitPrice(id) {
-  const catalogItem = catalogById[id];
-  if (catalogItem) return catalogItem.price;
-  const extra = initialCartPricing[id];
+// ---------------------------------------------------------------------------
+// Price / info lookups — accept compound keys like "cam-v4::White"
+// ---------------------------------------------------------------------------
+export function getUnitPrice(key) {
+  const { productId } = parseCartKey(key);
+  if (catalogById[productId]) return catalogById[productId].price;
+  const extra = initialCartPricing[productId];
   if (extra) return extra.unitPrice;
   return 0;
 }
 
-export function getOldUnitPrice(id) {
-  const catalogItem = catalogById[id];
-  if (catalogItem) return catalogItem.oldPrice ?? null;
-  const extra = initialCartPricing[id];
+export function getOldUnitPrice(key) {
+  const { productId } = parseCartKey(key);
+  if (catalogById[productId]) return catalogById[productId].oldPrice ?? null;
+  const extra = initialCartPricing[productId];
   if (extra) return extra.oldUnitPrice;
   return null;
 }
 
-export function getItemInfo(id) {
-  const catalogItem = catalogById[id];
+export function getItemInfo(key) {
+  const { productId, variant } = parseCartKey(key);
+  const catalogItem = catalogById[productId];
   if (catalogItem) {
-    return { title: catalogItem.title, image: catalogItem.image };
+    // Append color label in the review panel title
+    const title = variant ? `${catalogItem.title} (${variant})` : catalogItem.title;
+    return { title, image: catalogItem.image };
   }
-  const extra = initialCartPricing[id];
-  if (extra) {
-    return { title: extra.title, image: extra.image };
-  }
-  return { title: id, image: null };
+  const extra = initialCartPricing[productId];
+  if (extra) return { title: extra.title, image: extra.image };
+  return { title: key, image: null };
 }
 
-
-const cameraIds = new Set(productsData.catalog.cameras.map((c) => c.id));
-const sensorIds = new Set(productsData.initialState.cart.sensors.map((s) => s.id));
+// ---------------------------------------------------------------------------
+// Category helpers — work with both bare and compound keys
+// ---------------------------------------------------------------------------
+const cameraIds    = new Set(productsData.catalog.cameras.map((c) => c.id));
+const sensorIds    = new Set(productsData.initialState.cart.sensors.map((s) => s.id));
 const accessoryIds = new Set(productsData.initialState.cart.accessories.map((a) => a.id));
 
-export function isCamera(id) { return cameraIds.has(id); }
-export function isSensor(id) { return sensorIds.has(id); }
-export function isAccessory(id) { return accessoryIds.has(id); }
+export function isCamera(key)    { return cameraIds.has(parseCartKey(key).productId); }
+export function isSensor(key)    { return sensorIds.has(parseCartKey(key).productId); }
+export function isAccessory(key) { return accessoryIds.has(parseCartKey(key).productId); }
 
+// ---------------------------------------------------------------------------
+// Store
+// ---------------------------------------------------------------------------
 const useBundleStore = create((set, get) => ({
   catalog: productsData.catalog,
 
-  cartItems: buildInitialCart(productsData.initialState),
+  // One entry per product+variant: { "cam-v4::White": { quantity: 1 }, ... }
+  cartItems: buildInitialCart(productsData.initialState, productsData.catalog),
 
   plan: { ...productsData.initialState.cart.plan },
 
-  openSteps: [1], 
+  openSteps: [1], // step 1 open by default
 
-  setQuantity: (id, qty) =>
+  // ── Actions ────────────────────────────────────────────────────────────────
+
+  setQuantity: (key, qty) =>
     set((state) => ({
       cartItems: {
         ...state.cartItems,
-        [id]: { ...state.cartItems[id], quantity: Math.max(0, qty) },
+        [key]: { ...state.cartItems[key], quantity: Math.max(0, qty) },
       },
     })),
 
-  incrementQty: (id) => {
-    const current = get().cartItems[id]?.quantity ?? 0;
-    get().setQuantity(id, current + 1);
+  incrementQty: (key) => {
+    const current = get().cartItems[key]?.quantity ?? 0;
+    get().setQuantity(key, current + 1);
   },
 
-  decrementQty: (id) => {
-    const current = get().cartItems[id]?.quantity ?? 0;
-    get().setQuantity(id, current - 1);
+  decrementQty: (key) => {
+    const current = get().cartItems[key]?.quantity ?? 0;
+    get().setQuantity(key, current - 1);
   },
-
-  selectColor: (productId, colorName) =>
-    set((state) => ({
-      cartItems: {
-        ...state.cartItems,
-        [productId]: { ...state.cartItems[productId], color: colorName },
-      },
-    })),
 
   toggleStep: (step) =>
     set((state) => ({
@@ -137,60 +172,56 @@ const useBundleStore = create((set, get) => ({
         : [...state.openSteps, step],
     })),
 
-  /** Restore a previously saved state from localStorage */
-  rehydrate: (saved) => set({
-    cartItems: saved.cartItems ?? get().cartItems,
-    plan:      saved.plan      ?? get().plan,
-    // openSteps intentionally NOT restored — step UI always resets to default
-  }),
+  /** Restore from localStorage — only cart data, not UI state */
+  rehydrate: (saved) =>
+    set({
+      cartItems: saved.cartItems ?? get().cartItems,
+      plan:      saved.plan      ?? get().plan,
+    }),
+
+  // ── Derived ───────────────────────────────────────────────────────────────
 
   getCartTotal: () => {
     const { cartItems, plan } = get();
     let total = 0;
-    for (const [id, item] of Object.entries(cartItems)) {
-      if (item.quantity > 0) {
-        total += item.quantity * getUnitPrice(id);
-      }
+    for (const [key, item] of Object.entries(cartItems)) {
+      if (item.quantity > 0) total += item.quantity * getUnitPrice(key);
     }
     total += plan.price;
     return total;
   },
 
-  /** Total using old prices (for strikethrough) */
   getOldTotal: () => {
     const { cartItems, plan } = get();
     let total = 0;
-    for (const [id, item] of Object.entries(cartItems)) {
+    for (const [key, item] of Object.entries(cartItems)) {
       if (item.quantity > 0) {
-        const oldUnit = getOldUnitPrice(id);
-        total += item.quantity * (oldUnit ?? getUnitPrice(id));
+        const oldUnit = getOldUnitPrice(key);
+        total += item.quantity * (oldUnit ?? getUnitPrice(key));
       }
     }
     total += plan.oldPrice ?? plan.price;
     return total;
   },
 
-  /** How much the user saves */
-  getSavings: () => {
-    return get().getOldTotal() - get().getCartTotal();
-  },
+  getSavings: () => get().getOldTotal() - get().getCartTotal(),
 
-  /** Count of cameras with quantity > 0 */
+  /**
+   * Count of DISTINCT camera products with any variant qty > 0.
+   * (2 White + 1 Black of the same camera = 1 selected camera)
+   */
   getSelectedCameraCount: () => {
     const { cartItems } = get();
-    let count = 0;
-    for (const [id, item] of Object.entries(cartItems)) {
-      if (isCamera(id) && item.quantity > 0) {
-        count += item.quantity;
+    const distinctProducts = new Set();
+    for (const [key, item] of Object.entries(cartItems)) {
+      if (isCamera(key) && item.quantity > 0) {
+        distinctProducts.add(parseCartKey(key).productId);
       }
     }
-    return count;
+    return distinctProducts.size;
   },
 
-  /** "As low as" monthly price (total / 12) */
-  getMonthlyPrice: () => {
-    return get().getCartTotal() / 12;
-  },
+  getMonthlyPrice: () => get().getCartTotal() / 12,
 }));
 
 export default useBundleStore;

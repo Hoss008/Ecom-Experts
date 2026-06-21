@@ -185,3 +185,25 @@
   color: var(--primary-purple);
   text-transform: uppercase;
 }
+
+/* ── Next button (matches camera step styling) ─────────────────── */
+.nextButton {
+  font-family: inherit;
+  display: block;
+  margin: 16px auto 0;
+  padding: 5px 24px;
+  background-color: transparent;
+  color: var(--primary-purple);
+  border: 1px solid var(--primary-purple);
+  border-radius: 7px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 24px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nextButton:hover {
+  background-color: var(--primary-purple);
+  color: #ffffff;
+}

@@ -208,6 +208,23 @@
   background-color: rgba(0, 163, 137, 0.06); 
 }
 
+/* Tiny badge showing qty for a specific variant on its color chip */
+.variantQtyBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  background-color: var(--primary-purple);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 7px;
+  margin-left: 2px;
+  line-height: 1;
+}
+
 .colorDot {
   width: 12px;
   height: 12px;
@@ -251,6 +268,12 @@
   background-color: var(--light-grey);
   border: 2px solid var(--light-grey);
   cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.qtyBtnDisabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .qtyNumber {
@@ -302,6 +325,10 @@
   cursor: pointer;
   margin-bottom: 8px;
   line-height: 24px;
+}
+.nextButton:hover {
+  background-color: var(--primary-purple);
+  color: white;
 }
 
 .mobileTitle {
