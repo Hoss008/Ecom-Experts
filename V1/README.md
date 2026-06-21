@@ -80,3 +80,9 @@ Step accordion state (`openSteps`) is intentionally **not persisted** — the ac
 | Zustand | Lightweight global state without boilerplate |
 | CSS Modules | Scoped styles, no runtime overhead, easy to reason about |
 | Gilroy font | Matches the Figma typography |
+
+
+some changes i made for better UX
+1- grey negative button when the quantity is zero 
+2-the checkout button are interactive letting the user know its done
+3-fixed the color of quantity buttons in the review panel for better UI
