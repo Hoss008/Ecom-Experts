@@ -5,7 +5,6 @@ import waves from '../assets/icon/24/cam/waves.svg';
 import shield from '../assets/icon/24/cam/shield.svg';
 import extra from '../assets/icon/24/cam/extra.svg';
 import guard from '../assets/icon/24/cam/guard.svg';
-import productsData from '../data/products.json';
 
 const ExpandedItem = ({ id }) => {
   const item       = useBundleStore((s) => s.cartItems[id]);
@@ -79,7 +78,7 @@ const PlanContent = () => {
 
 // ─── Step 3: Sensors ─────────────────────────────────────────────────────────
 const SensorsContent = () => {
-  const sensorIds = productsData.initialState.cart.sensors.map((s) => s.id);
+  const sensorIds = useBundleStore((state) => state.sensorIds);
   return (
     <div className={styles.expandedContent}>
       {sensorIds.map((id) => (
@@ -91,7 +90,7 @@ const SensorsContent = () => {
 
 // ─── Step 4: Accessories ─────────────────────────────────────────────────────
 const AccessoriesContent = () => {
-  const accessoryIds = productsData.initialState.cart.accessories.map((a) => a.id);
+  const accessoryIds = useBundleStore((state) => state.accessoryIds);
   return (
     <div className={styles.expandedContent}>
       {accessoryIds.map((id) => (

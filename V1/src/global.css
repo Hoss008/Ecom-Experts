@@ -31,6 +31,14 @@ body {
   padding-bottom: 3.085rem;
 }
 
+.appStatus {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}
+
 @font-face {
   font-family: "Gilroy";
   src: url("./assets/fonts/Gilroy-Regular.woff2") format("woff2");

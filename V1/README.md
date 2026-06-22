@@ -1,4 +1,4 @@
-# Bundle Builder — Frontend Take-Home
+# Bundle Builder — React + Express Take-Home
 
 A multi-step security system bundle builder built in React. Shoppers configure cameras, a monitoring plan, sensors, and accessories through a 4-step accordion. A live review panel beside it reflects every selection in real time.
 
@@ -10,14 +10,28 @@ A multi-step security system bundle builder built in React. Shoppers configure c
 # Install dependencies
 npm install
 
-# Start dev server (runs on http://localhost:5173)
+# Start the Express API and Vite client (http://localhost:5173)
 npm run dev
 
 # Build for production
 npm run build
+
+# Serve the production build and API from Express (http://localhost:3001)
+npm start
 ```
 
-Requires Node 18+. No environment variables needed.
+Requires Node 18+. No environment variables are needed.
+
+## API
+
+The client gets its full catalog and seeded bundle state from Express:
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/bundle` | Catalog, pre-populated review items, and initial plan/cart state |
+| `GET /api/health` | Minimal health check |
+
+In development, Vite proxies `/api` to Express on port `3001`. In production, Express serves both `dist/` and the API on the same origin.
 
 ---
 
@@ -48,9 +62,9 @@ Cart keys are **compound strings**: `"productId::colorName"` for products with v
 
 The review panel renders one line per compound key that has `quantity > 0`, so adding both White and Black produces two separate review lines automatically.
 
-### Data Source: Local JSON (`src/data/products.json`)
+### Data Source: Express API (`GET /api/bundle`)
 
-All product catalog data and the initial seeded cart state come from a single JSON file. The app renders from data — no product markup is hardcoded in any component. The store's `buildInitialCart` function initializes all color variant slots from the catalog at startup so variant keys always exist.
+The small Express server owns the catalog and initial bundle data in `server/data/bundleData.js` and exposes it as JSON at `/api/bundle`. The React app fetches that endpoint before it renders the bundle. No product markup is hardcoded in the components; the store builds every product/variant slot and pre-populates the review items from the API response.
 
 ### Persistence: Manual Save Only
 
@@ -67,7 +81,7 @@ Step accordion state (`openSteps`) is intentionally **not persisted** — the ac
 | Sensor/accessory unit prices | Derived as `totalPrice / seedQty` from JSON | Fragile if seed qty changes — ideally stored as explicit `unitPrice` in JSON |
 | Shipping row | Hardcoded `$5.99 → FREE` | Should come from JSON for consistency |
 | No plan selector | Plan is fixed at "Cam Unlimited" | Spec shows one plan in design — a future iteration would let the user switch |
-| No backend | JSON is local | Spec says API is a bonus; a small Express or Hono endpoint serving the same JSON would be trivial to add |
+| In-memory catalog | Server restarts reset catalog changes | Appropriate for this read-only take-home API; a database would be needless complexity |
 | No tests | — | Given the take-home scope, I focused on correctness and fidelity over test coverage |
 
 ---

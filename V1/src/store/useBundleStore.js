@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import productsData from '../data/products.json';
 
 // ---------------------------------------------------------------------------
 // Key format
@@ -8,78 +7,71 @@ import productsData from '../data/products.json';
 //   Sensors/Acc:      "sense-motion"
 // ---------------------------------------------------------------------------
 export function parseCartKey(key) {
-  const sep = key.indexOf('::');
-  if (sep === -1) return { productId: key, variant: null };
-  return { productId: key.slice(0, sep), variant: key.slice(sep + 2) };
+  const separator = key.indexOf('::');
+  if (separator === -1) return { productId: key, variant: null };
+  return { productId: key.slice(0, separator), variant: key.slice(separator + 2) };
 }
 
 export function makeCartKey(productId, colorName) {
   return colorName ? `${productId}::${colorName}` : productId;
 }
 
-// ---------------------------------------------------------------------------
-// Build initial cart — one slot per product+variant combo
-// ---------------------------------------------------------------------------
 function buildInitialCart(initialState, catalog) {
   const cart = {};
+  const seededCameras = new Map(initialState.cart.cameras.map((camera) => [camera.id, camera]));
 
-  // Map of seeded cameras { id -> { quantity, color } }
-  const seededCameras = new Map(
-    initialState.cart.cameras.map((c) => [c.id, c])
-  );
-
-  for (const cam of catalog.cameras) {
-    if (cam.colors && cam.colors.length > 0) {
-      // Create one entry per color variant
-      for (const color of cam.colors) {
-        const key = makeCartKey(cam.id, color.name);
-        const seeded = seededCameras.get(cam.id);
-        // Only seed qty on the pre-selected color; all others start at 0
-        const qty = seeded && seeded.color === color.name ? seeded.quantity : 0;
-        cart[key] = { quantity: qty };
+  for (const camera of catalog.cameras) {
+    if (camera.colors?.length) {
+      for (const color of camera.colors) {
+        const key = makeCartKey(camera.id, color.name);
+        const seeded = seededCameras.get(camera.id);
+        cart[key] = {
+          quantity: seeded?.color === color.name ? seeded.quantity : 0,
+        };
       }
     } else {
-      // No variants — bare productId
-      const seeded = seededCameras.get(cam.id);
-      cart[cam.id] = { quantity: seeded?.quantity ?? 0 };
+      cart[camera.id] = { quantity: seededCameras.get(camera.id)?.quantity ?? 0 };
     }
   }
 
-  // Sensors and accessories (no color variants)
   for (const sensor of initialState.cart.sensors) {
     cart[sensor.id] = { quantity: sensor.quantity };
   }
-  for (const acc of initialState.cart.accessories) {
-    cart[acc.id] = { quantity: acc.quantity };
+  for (const accessory of initialState.cart.accessories) {
+    cart[accessory.id] = { quantity: accessory.quantity };
   }
 
   return cart;
 }
 
-// ---------------------------------------------------------------------------
-// Lookup tables (indexed by bare productId)
-// ---------------------------------------------------------------------------
-const catalogById = {};
-for (const cam of productsData.catalog.cameras) {
-  catalogById[cam.id] = cam;
+function buildIndexes(bundle) {
+  const { catalog, initialState } = bundle;
+  const { sensors, accessories } = initialState.cart;
+  const catalogById = Object.fromEntries(catalog.cameras.map((camera) => [camera.id, camera]));
+  const seededItemById = {};
+
+  for (const item of [...sensors, ...accessories]) {
+    seededItemById[item.id] = {
+      title: item.title,
+      image: item.image,
+      unitPrice: item.price / item.quantity,
+      oldUnitPrice: item.oldPrice != null ? item.oldPrice / item.quantity : null,
+    };
+  }
+
+  return {
+    catalogById,
+    seededItemById,
+    cameraIds: new Set(catalog.cameras.map((camera) => camera.id)),
+    sensorIds: sensors.map((sensor) => sensor.id),
+    sensorIdSet: new Set(sensors.map((sensor) => sensor.id)),
+    accessoryIds: accessories.map((accessory) => accessory.id),
+    accessoryIdSet: new Set(accessories.map((accessory) => accessory.id)),
+  };
 }
 
-const initialCartPricing = {};
-for (const sensor of productsData.initialState.cart.sensors) {
-  initialCartPricing[sensor.id] = {
-    title: sensor.title,
-    image: sensor.image,
-    unitPrice: sensor.price / sensor.quantity,
-    oldUnitPrice: sensor.oldPrice != null ? sensor.oldPrice / sensor.quantity : null,
-  };
-}
-for (const acc of productsData.initialState.cart.accessories) {
-  initialCartPricing[acc.id] = {
-    title: acc.title,
-    image: acc.image,
-    unitPrice: acc.price / acc.quantity,
-    oldUnitPrice: acc.oldPrice != null ? acc.oldPrice / acc.quantity : null,
-  };
+function getMetadata() {
+  return useBundleStore.getState();
 }
 
 // ---------------------------------------------------------------------------
@@ -87,138 +79,142 @@ for (const acc of productsData.initialState.cart.accessories) {
 // ---------------------------------------------------------------------------
 export function getUnitPrice(key) {
   const { productId } = parseCartKey(key);
-  if (catalogById[productId]) return catalogById[productId].price;
-  const extra = initialCartPricing[productId];
-  if (extra) return extra.unitPrice;
-  return 0;
+  const { catalogById, seededItemById } = getMetadata();
+  return catalogById[productId]?.price ?? seededItemById[productId]?.unitPrice ?? 0;
 }
 
 export function getOldUnitPrice(key) {
   const { productId } = parseCartKey(key);
-  if (catalogById[productId]) return catalogById[productId].oldPrice ?? null;
-  const extra = initialCartPricing[productId];
-  if (extra) return extra.oldUnitPrice;
-  return null;
+  const { catalogById, seededItemById } = getMetadata();
+  return catalogById[productId]?.oldPrice ?? seededItemById[productId]?.oldUnitPrice ?? null;
 }
 
 export function getItemInfo(key) {
   const { productId, variant } = parseCartKey(key);
+  const { catalogById, seededItemById } = getMetadata();
   const catalogItem = catalogById[productId];
+
   if (catalogItem) {
-    // Append color label in the review panel title
-    const title = variant ? `${catalogItem.title} (${variant})` : catalogItem.title;
-    return { title, image: catalogItem.image };
+    return {
+      title: variant ? `${catalogItem.title} (${variant})` : catalogItem.title,
+      image: catalogItem.image,
+    };
   }
-  const extra = initialCartPricing[productId];
-  if (extra) return { title: extra.title, image: extra.image };
-  return { title: key, image: null };
+
+  const seededItem = seededItemById[productId];
+  return seededItem ? { title: seededItem.title, image: seededItem.image } : { title: key, image: null };
 }
 
-// ---------------------------------------------------------------------------
-// Category helpers — work with both bare and compound keys
-// ---------------------------------------------------------------------------
-const cameraIds    = new Set(productsData.catalog.cameras.map((c) => c.id));
-const sensorIds    = new Set(productsData.initialState.cart.sensors.map((s) => s.id));
-const accessoryIds = new Set(productsData.initialState.cart.accessories.map((a) => a.id));
+export function isCamera(key) {
+  return getMetadata().cameraIds.has(parseCartKey(key).productId);
+}
 
-export function isCamera(key)    { return cameraIds.has(parseCartKey(key).productId); }
-export function isSensor(key)    { return sensorIds.has(parseCartKey(key).productId); }
-export function isAccessory(key) { return accessoryIds.has(parseCartKey(key).productId); }
+export function isSensor(key) {
+  return getMetadata().sensorIdSet.has(parseCartKey(key).productId);
+}
 
-// ---------------------------------------------------------------------------
-// Store
-// ---------------------------------------------------------------------------
+export function isAccessory(key) {
+  return getMetadata().accessoryIdSet.has(parseCartKey(key).productId);
+}
+
+const emptyCatalog = { cameras: [] };
+
 const useBundleStore = create((set, get) => ({
-  catalog: productsData.catalog,
+  catalog: emptyCatalog,
+  cartItems: {},
+  plan: null,
+  catalogById: {},
+  seededItemById: {},
+  cameraIds: new Set(),
+  sensorIds: [],
+  sensorIdSet: new Set(),
+  accessoryIds: [],
+  accessoryIdSet: new Set(),
+  loadStatus: 'loading',
+  loadError: null,
+  openSteps: [1],
 
-  // One entry per product+variant: { "cam-v4::White": { quantity: 1 }, ... }
-  cartItems: buildInitialCart(productsData.initialState, productsData.catalog),
+  initializeBundle: (bundle) => {
+    if (!bundle?.catalog?.cameras || !bundle?.initialState?.cart) {
+      throw new Error('The bundle API returned an invalid catalog.');
+    }
 
-  plan: { ...productsData.initialState.cart.plan },
+    const indexes = buildIndexes(bundle);
+    set({
+      catalog: bundle.catalog,
+      cartItems: buildInitialCart(bundle.initialState, bundle.catalog),
+      plan: { ...bundle.initialState.cart.plan },
+      ...indexes,
+      loadStatus: 'ready',
+      loadError: null,
+    });
+  },
 
-  openSteps: [1], // step 1 open by default
+  setLoadError: (message) => set({ loadStatus: 'error', loadError: message }),
 
-  // ── Actions ────────────────────────────────────────────────────────────────
-
-  setQuantity: (key, qty) =>
+  setQuantity: (key, quantity) =>
     set((state) => ({
       cartItems: {
         ...state.cartItems,
-        [key]: { ...state.cartItems[key], quantity: Math.max(0, qty) },
+        [key]: { ...state.cartItems[key], quantity: Math.max(0, quantity) },
       },
     })),
 
   incrementQty: (key) => {
-    const current = get().cartItems[key]?.quantity ?? 0;
-    get().setQuantity(key, current + 1);
+    const quantity = get().cartItems[key]?.quantity ?? 0;
+    get().setQuantity(key, quantity + 1);
   },
 
   decrementQty: (key) => {
-    const current = get().cartItems[key]?.quantity ?? 0;
-    get().setQuantity(key, current - 1);
+    const quantity = get().cartItems[key]?.quantity ?? 0;
+    get().setQuantity(key, quantity - 1);
   },
 
   toggleStep: (step) =>
     set((state) => ({
       openSteps: state.openSteps.includes(step)
-        ? state.openSteps.filter((s) => s !== step)
+        ? state.openSteps.filter((openStep) => openStep !== step)
         : [...state.openSteps, step],
     })),
 
   openStep: (step) =>
     set((state) => ({
-      openSteps: state.openSteps.includes(step)
-        ? state.openSteps
-        : [...state.openSteps, step],
+      openSteps: state.openSteps.includes(step) ? state.openSteps : [...state.openSteps, step],
     })),
 
-  /** Restore from localStorage — only cart data, not UI state */
+  /** Restore only saved customer choices after the API establishes the catalog. */
   rehydrate: (saved) =>
-    set({
-      cartItems: saved.cartItems ?? get().cartItems,
-      plan:      saved.plan      ?? get().plan,
-    }),
-
-  // ── Derived ───────────────────────────────────────────────────────────────
+    set((state) => ({
+      cartItems: saved.cartItems ?? state.cartItems,
+      plan: saved.plan ?? state.plan,
+    })),
 
   getCartTotal: () => {
     const { cartItems, plan } = get();
-    let total = 0;
-    for (const [key, item] of Object.entries(cartItems)) {
-      if (item.quantity > 0) total += item.quantity * getUnitPrice(key);
-    }
-    total += plan.price;
-    return total;
+    const itemsTotal = Object.entries(cartItems).reduce(
+      (total, [key, item]) => total + item.quantity * getUnitPrice(key),
+      0,
+    );
+    return itemsTotal + (plan?.price ?? 0);
   },
 
   getOldTotal: () => {
     const { cartItems, plan } = get();
-    let total = 0;
-    for (const [key, item] of Object.entries(cartItems)) {
-      if (item.quantity > 0) {
-        const oldUnit = getOldUnitPrice(key);
-        total += item.quantity * (oldUnit ?? getUnitPrice(key));
-      }
-    }
-    total += plan.oldPrice ?? plan.price;
-    return total;
+    const itemsTotal = Object.entries(cartItems).reduce((total, [key, item]) => {
+      const unitPrice = getUnitPrice(key);
+      return total + item.quantity * (getOldUnitPrice(key) ?? unitPrice);
+    }, 0);
+    return itemsTotal + (plan?.oldPrice ?? plan?.price ?? 0);
   },
 
   getSavings: () => get().getOldTotal() - get().getCartTotal(),
 
-  /**
-   * Count of DISTINCT camera products with any variant qty > 0.
-   * (2 White + 1 Black of the same camera = 1 selected camera)
-   */
   getSelectedCameraCount: () => {
-    const { cartItems } = get();
-    const distinctProducts = new Set();
-    for (const [key, item] of Object.entries(cartItems)) {
-      if (isCamera(key) && item.quantity > 0) {
-        distinctProducts.add(parseCartKey(key).productId);
-      }
+    const selectedCameraIds = new Set();
+    for (const [key, item] of Object.entries(get().cartItems)) {
+      if (isCamera(key) && item.quantity > 0) selectedCameraIds.add(parseCartKey(key).productId);
     }
-    return distinctProducts.size;
+    return selectedCameraIds.size;
   },
 
   getMonthlyPrice: () => get().getCartTotal() / 12,
