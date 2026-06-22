@@ -84,5 +84,6 @@ Step accordion state (`openSteps`) is intentionally **not persisted** — the ac
 
 some changes i made for better UX
 1- grey negative button when the quantity is zero 
-2-the checkout button are interactive letting the user know its done
-3-fixed the color of quantity buttons in the review panel for better UI
+2- the checkout button are interactive letting the user know its done
+3- fixed the color of quantity buttons in the review panel for better UI
+4- the next buttons works and led to the next section
