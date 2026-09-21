@@ -6,9 +6,6 @@ import camera from "../assets/icon/24/cam/camera.svg";
 import ReviewPanel from "./ReviewPanel";
 import ExtraPanel from "./ExtraPanel";
 
-// ---------------------------------------------------------------------------
-// Single camera card — handles per-variant quantity selection
-// ---------------------------------------------------------------------------
 const SingleProductItem = ({ product }) => {
   const hasVariants = product.colors && product.colors.length > 0;
 
