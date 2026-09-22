@@ -82,7 +82,9 @@
         {
           "id": "cam-pan-v3",
           "quantity": 2,
-          "color": "White"
+          "color": "White",
+          "overridePrice": 23.99,
+          "overrideOldPrice": 28.99
         }
       ],
       "sensors": [
