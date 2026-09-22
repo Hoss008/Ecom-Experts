@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import productsData from '../data/products.json';
 
 // ---------------------------------------------------------------------------
@@ -153,122 +154,125 @@ export function isAccessory(key) { return accessoryIds.has(parseCartKey(key).pro
 // ---------------------------------------------------------------------------
 // Store
 // ---------------------------------------------------------------------------
-const useBundleStore = create((set, get) => ({
-  catalog: productsData.catalog,
+const useBundleStore = create(
+  persist(
+    (set, get) => ({
+      catalog: productsData.catalog,
 
-  cartItems: buildInitialCart(productsData.initialState, productsData.catalog),
+      cartItems: buildInitialCart(productsData.initialState, productsData.catalog),
 
-  plan: { ...productsData.initialState.cart.plan },
+      plan: { ...productsData.initialState.cart.plan },
 
-  openSteps: [1],
+      openSteps: [1],
 
-  activeVariantByProduct: buildInitialActiveVariants(
-    productsData.initialState,
-    productsData.catalog
-  ),
+      activeVariantByProduct: buildInitialActiveVariants(
+        productsData.initialState,
+        productsData.catalog
+      ),
 
-  // ── Actions ────────────────────────────────────────────────────────────────
+      // ── Actions ────────────────────────────────────────────────────────────────
 
-  setQuantity: (key, qty) =>
-    set((state) => ({
-      cartItems: {
-        ...state.cartItems,
-        [key]: { ...state.cartItems[key], quantity: Math.max(0, qty) },
+      setQuantity: (key, qty) =>
+        set((state) => ({
+          cartItems: {
+            ...state.cartItems,
+            [key]: { ...state.cartItems[key], quantity: Math.max(0, qty) },
+          },
+        })),
+
+      incrementQty: (key) => {
+        const current = get().cartItems[key]?.quantity ?? 0;
+        get().setQuantity(key, current + 1);
       },
-    })),
 
-  incrementQty: (key) => {
-    const current = get().cartItems[key]?.quantity ?? 0;
-    get().setQuantity(key, current + 1);
-  },
-
-  decrementQty: (key) => {
-    const current = get().cartItems[key]?.quantity ?? 0;
-    get().setQuantity(key, current - 1);
-  },
-
-  toggleStep: (step) =>
-    set((state) => ({
-      openSteps: state.openSteps.includes(step)
-        ? state.openSteps.filter((s) => s !== step)
-        : [...state.openSteps, step],
-    })),
-
-  openStep: (step) =>
-    set((state) => ({
-      openSteps: state.openSteps.includes(step)
-        ? state.openSteps
-        : [...state.openSteps, step],
-    })),
-
-  advanceStep: (currentStep, nextStep) =>
-    set((state) => ({
-      openSteps: [
-        ...state.openSteps.filter((step) => step !== currentStep && step !== nextStep),
-        nextStep,
-      ],
-    })),
-
-  setActiveVariant: (productId, colorName) =>
-    set((state) => ({
-      activeVariantByProduct: {
-        ...state.activeVariantByProduct,
-        [productId]: colorName,
+      decrementQty: (key) => {
+        const current = get().cartItems[key]?.quantity ?? 0;
+        get().setQuantity(key, current - 1);
       },
-    })),
 
-  /** Restore from localStorage — only cart data, not UI state */
-  rehydrate: (saved) =>
-    set({
-      cartItems: saved.cartItems ?? get().cartItems,
-      plan:      saved.plan      ?? get().plan,
-      activeVariantByProduct:
-        saved.activeVariantByProduct ?? get().activeVariantByProduct,
+      toggleStep: (step) =>
+        set((state) => ({
+          openSteps: state.openSteps.includes(step)
+            ? state.openSteps.filter((s) => s !== step)
+            : [...state.openSteps, step],
+        })),
+
+      openStep: (step) =>
+        set((state) => ({
+          openSteps: state.openSteps.includes(step)
+            ? state.openSteps
+            : [...state.openSteps, step],
+        })),
+
+      advanceStep: (currentStep, nextStep) =>
+        set((state) => ({
+          openSteps: [
+            ...state.openSteps.filter((step) => step !== currentStep && step !== nextStep),
+            nextStep,
+          ],
+        })),
+
+      setActiveVariant: (productId, colorName) =>
+        set((state) => ({
+          activeVariantByProduct: {
+            ...state.activeVariantByProduct,
+            [productId]: colorName,
+          },
+        })),
+
+      // ── Derived ───────────────────────────────────────────────────────────────
+
+      getCartTotal: () => {
+        const { cartItems, plan } = get();
+        let total = 0;
+        for (const [key, item] of Object.entries(cartItems)) {
+          if (item.quantity > 0) total += item.quantity * getUnitPrice(key);
+        }
+        total += plan.price;
+        return total;
+      },
+
+      getOldTotal: () => {
+        const { cartItems, plan } = get();
+        let total = 0;
+        for (const [key, item] of Object.entries(cartItems)) {
+          if (item.quantity > 0) {
+            const oldUnit = getOldUnitPrice(key);
+            total += item.quantity * (oldUnit ?? getUnitPrice(key));
+          }
+        }
+        total += plan.oldPrice ?? plan.price;
+        return total;
+      },
+
+      getSavings: () => get().getOldTotal() - get().getCartTotal(),
+
+      /**
+       * Count of DISTINCT camera products with any variant qty > 0.
+       * (2 White + 1 Black of the same camera = 1 selected camera)
+       */
+      getSelectedCameraCount: () => {
+        const { cartItems } = get();
+        const distinctProducts = new Set();
+        for (const [key, item] of Object.entries(cartItems)) {
+          if (isCamera(key) && item.quantity > 0) {
+            distinctProducts.add(parseCartKey(key).productId);
+          }
+        }
+        return distinctProducts.size;
+      },
+
+      getMonthlyPrice: () => get().getCartTotal() / 12,
     }),
-
-  // ── Derived ───────────────────────────────────────────────────────────────
-
-  getCartTotal: () => {
-    const { cartItems, plan } = get();
-    let total = 0;
-    for (const [key, item] of Object.entries(cartItems)) {
-      if (item.quantity > 0) total += item.quantity * getUnitPrice(key);
+    {
+      name: 'ecom-experts-bundle',
+      partialize: (state) => ({
+        cartItems: state.cartItems,
+        plan: state.plan,
+        activeVariantByProduct: state.activeVariantByProduct,
+      }),
     }
-    total += plan.price;
-    return total;
-  },
-
-  getOldTotal: () => {
-    const { cartItems, plan } = get();
-    let total = 0;
-    for (const [key, item] of Object.entries(cartItems)) {
-      if (item.quantity > 0) {
-        const oldUnit = getOldUnitPrice(key);
-        total += item.quantity * (oldUnit ?? getUnitPrice(key));
-      }
-    }
-    total += plan.oldPrice ?? plan.price;
-    return total;
-  },
-
-  getSavings: () => get().getOldTotal() - get().getCartTotal(),
-
-  /**
-   * Count of DISTINCT camera products with any variant qty > 0.
-   * (2 White + 1 Black of the same camera = 1 selected camera)
-   */
-  getSelectedCameraCount: () => {
-    const { cartItems } = get();
-    const distinctProducts = new Set();
-    for (const [key, item] of Object.entries(cartItems)) {
-      if (isCamera(key) && item.quantity > 0) {
-        distinctProducts.add(parseCartKey(key).productId);
-      }
-    }
-    return distinctProducts.size;
-  },
-
-  getMonthlyPrice: () => get().getCartTotal() / 12,
-}));
+  )
+);
 
 export default useBundleStore;
