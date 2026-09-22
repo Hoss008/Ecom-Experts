@@ -51,6 +51,21 @@ function buildInitialCart(initialState, catalog) {
   return cart;
 }
 
+function buildInitialActiveVariants(initialState, catalog) {
+  const seededCameras = new Map(
+    initialState.cart.cameras.map((c) => [c.id, c])
+  );
+
+  return catalog.cameras.reduce((result, cam) => {
+    if (!cam.colors || cam.colors.length === 0) return result;
+
+    const seeded = seededCameras.get(cam.id);
+    const seededColor = cam.colors.find((color) => color.name === seeded?.color);
+    result[cam.id] = seededColor ? seededColor.name : cam.colors[0].name;
+    return result;
+  }, {});
+}
+
 // ---------------------------------------------------------------------------
 // Lookup tables (indexed by bare productId)
 // ---------------------------------------------------------------------------
@@ -147,6 +162,11 @@ const useBundleStore = create((set, get) => ({
 
   openSteps: [1],
 
+  activeVariantByProduct: buildInitialActiveVariants(
+    productsData.initialState,
+    productsData.catalog
+  ),
+
   // ── Actions ────────────────────────────────────────────────────────────────
 
   setQuantity: (key, qty) =>
@@ -181,11 +201,29 @@ const useBundleStore = create((set, get) => ({
         : [...state.openSteps, step],
     })),
 
+  advanceStep: (currentStep, nextStep) =>
+    set((state) => ({
+      openSteps: [
+        ...state.openSteps.filter((step) => step !== currentStep && step !== nextStep),
+        nextStep,
+      ],
+    })),
+
+  setActiveVariant: (productId, colorName) =>
+    set((state) => ({
+      activeVariantByProduct: {
+        ...state.activeVariantByProduct,
+        [productId]: colorName,
+      },
+    })),
+
   /** Restore from localStorage — only cart data, not UI state */
   rehydrate: (saved) =>
     set({
       cartItems: saved.cartItems ?? get().cartItems,
       plan:      saved.plan      ?? get().plan,
+      activeVariantByProduct:
+        saved.activeVariantByProduct ?? get().activeVariantByProduct,
     }),
 
   // ── Derived ───────────────────────────────────────────────────────────────
