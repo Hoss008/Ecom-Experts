@@ -1,0 +1,53 @@
+.picker {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.chip {
+  background: white;
+  border: 0.5px solid #cccccc;
+  border-radius: 2px;
+  padding: 1px 5px;
+  font-size: 10px;
+  color: var(--text-dark);
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  letter-spacing: 0.6px;
+  line-height: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: inherit;
+}
+
+.chipActive {
+  border-color: #00a389;
+  box-shadow: 0 0 0 1px #00a389;
+  background-color: rgba(0, 163, 137, 0.06);
+}
+
+.chipIcon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+/* Tiny badge showing qty for this specific variant */
+.qtyBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  background-color: var(--primary-purple);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 7px;
+  margin-left: 2px;
+  line-height: 1;
+}
