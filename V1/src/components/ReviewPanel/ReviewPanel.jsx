@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styles from './ReviewPanel.module.css';
+import styles from './reviewpanel.module.css';
 import useBundleStore, { isCamera, isSensor, isAccessory } from '../../store/useBundleStore';
 import { useShallow } from 'zustand/react/shallow';
 import { formatPrice } from '../../utils/formatPrice';
@@ -7,8 +7,6 @@ import ReviewLineItem from './ReviewLineItem';
 import guaranteeIcon from '../../assets/icon/24/cam/fast.svg';
 import fastShippingIcon from '../../assets/icon/24/cam/fastshipping.svg';
 import guard from '../../assets/icon/24/cam/guard.svg';
-
-const STORAGE_KEY = 'ecom-experts-bundle';
 
 /**
  * Review panel — "Your security system" sidebar.
@@ -45,8 +43,8 @@ export default function ReviewPanel() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    const { cartItems, plan } = useBundleStore.getState();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ cartItems, plan }));
+    // Zustand's persist middleware automatically saves state changes to localStorage.
+    // We only need to trigger the UX confirmation here.
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
