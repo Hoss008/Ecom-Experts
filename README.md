@@ -101,4 +101,6 @@ To handle the requirement of restoring a user's configuration upon a return visi
 
 ## There is a backend server in Express.js in the backend branch for Bonus
 
+## The Figma File is not correct in calculation (the result is exactly $15.6575 (which rounds to $15.66). The designer who created the Figma mockup likely copy-pasted the "$19.19"), the cart total was ~$230, and forgot to update the math.   
+
 *Note on "Save for Later":* Because `persist` actively mirrors the state to local storage in real-time, the shopper's configuration is inherently protected against accidental tab closures. The "Save my system for later" button serves primarily as a UX confirmation to give the user peace of mind, leveraging the data already secured in the browser.
