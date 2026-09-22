@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styles from './reviewpanel.module.css';
+import styles from './ReviewPanel.module.css';
 import useBundleStore, { isCamera, isSensor, isAccessory } from '../../store/useBundleStore';
 import { useShallow } from 'zustand/react/shallow';
 import { formatPrice } from '../../utils/formatPrice';
@@ -43,8 +43,6 @@ export default function ReviewPanel() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    // Zustand's persist middleware automatically saves state changes to localStorage.
-    // We only need to trigger the UX confirmation here.
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -135,24 +133,14 @@ export default function ReviewPanel() {
           </div>
         </div>
 
-        {/* Satisfaction Guarantee */}
-        <div className={styles.guaranteeRow}>
+        {/* Guarantee & Totals Row (Combined) */}
+        <div className={styles.totalRow}>
           <img
             src={guaranteeIcon}
-            alt="satisfaction guarantee"
-            className={styles.guaranteeIcon}
+            alt="100% satisfaction guarantee"
+            className={styles.guaranteeBadge}
           />
-          <div className={styles.guaranteeText}>
-            <strong>30-day hassle-free returns</strong>
-            <p>
-              If you&apos;re not totally in love with the product, we will
-              refund you 100%.
-            </p>
-          </div>
-        </div>
-
-        {/* Total */}
-        <div className={styles.totalRow}>
+          
           <div className={styles.totalsRight}>
             <span className={styles.monthlyBadge}>
               as low as {formatPrice(monthlyPrice)}/mo

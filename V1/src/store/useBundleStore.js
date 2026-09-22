@@ -103,13 +103,6 @@ for (const acc of productsData.initialState.cart.accessories) {
     oldUnitPrice: acc.oldUnitPrice ?? null,
   };
 }
-
-// ---------------------------------------------------------------------------
-// Price / info lookups — accept compound keys like "cam-v4::White"
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// Price / info lookups — accept compound keys like "cam-v4::White"
-// ---------------------------------------------------------------------------
 export function getUnitPrice(key) {
   const { productId } = parseCartKey(key);
   
