@@ -1,0 +1,57 @@
+/* ── Default size (product cards) ──────────────────────────────── */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  line-height: 1;
+  border-radius: 8px;
+  background-color: var(--light-grey);
+  border: 2px solid var(--light-grey);
+  color: #4b5563;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  font-family: inherit;
+}
+
+.btnDisabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.count {
+  font-size: 16px;
+  font-weight: 500;
+  min-width: 14px;
+  text-align: center;
+}
+
+/* ── Compact size (review panel, step content rows) ───────────── */
+.compact {
+  gap: 8px;
+}
+
+.compact .btn {
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: none;
+  background-color: var(--light-grey);
+  color: var(--text-muted);
+}
+
+.compact .count {
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 12px;
+}

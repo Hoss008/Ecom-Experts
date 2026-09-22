@@ -1,0 +1,150 @@
+/* ── Two-column layout ────────────────────────────────────────── */
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 29px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.leftPanel {
+  flex: 1;
+  max-width: 768px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rightPanel {
+  align-self: flex-start;
+  flex-shrink: 0;
+  width: 380px;
+}
+
+/* ── Camera product grid ──────────────────────────────────────── */
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  width: 100%;
+}
+
+/* 5th camera centered alone */
+.centeredRow {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+}
+
+.centeredRow > * {
+  width: 100%;
+  max-width: 360px;
+}
+
+/* ── Expanded step content (sensors, accessories) ─────────────── */
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Plan content item (inline, no separate component needed) ─── */
+.contentItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.contentItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contentThumb {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contentThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.contentTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.contentPricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 64px;
+}
+
+.contentOldPrice {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.contentCurrentPrice {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-purple);
+}
+
+/* ── Mobile title ─────────────────────────────────────────────── */
+.mobileTitle {
+  display: none;
+}
+
+/* ── Responsive: Tablet + Phone ───────────────────────────────── */
+
+/* Tablet: stack columns but keep 2-column card grid */
+@media (max-width: 1024px) {
+  .layout {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .mobileTitle {
+    display: block;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-top: 10px;
+    margin-bottom: 24px;
+  }
+
+  .leftPanel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .rightPanel {
+    width: 100%;
+    margin-top: 24px;
+  }
+}
+
+/* Phone: collapse card grid to single column */
+@media (max-width: 640px) {
+  .productGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .centeredRow > * {
+    max-width: 100%;
+  }
+}

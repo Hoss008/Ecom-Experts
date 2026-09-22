@@ -64,7 +64,12 @@
           { "name": "Black", "iconId": "/small/blackpro.svg" }
         ]
       }
-    ]
+    ],
+    "shipping": {
+      "label": "Fast Shipping",
+      "price": 0,
+      "oldPrice": 5.99
+    }
   },
   "initialState": {
     "cart": {
@@ -72,16 +77,12 @@
         {
           "id": "cam-v4",
           "quantity": 1,
-          "color": "White",
-          "price": 27.98,
-          "oldPrice": 35.98
+          "color": "White"
         },
         {
           "id": "cam-pan-v3",
           "quantity": 2,
-          "color": "White",
-          "price": 47.98,
-          "oldPrice": 57.98
+          "color": "White"
         }
       ],
       "sensors": [
@@ -90,15 +91,15 @@
           "title": "Wyze Sense Motion Sensor",
           "image": "/small/sensor1.png",
           "quantity": 2,
-          "price": 59.98
+          "unitPrice": 29.99
         },
         {
           "id": "sense-hub",
           "title": "Wyze Sense Hub (Required)",
           "image": "/small/sensor2.png",
           "quantity": 1,
-          "price": 0,
-          "oldPrice": 29.92
+          "unitPrice": 0,
+          "oldUnitPrice": 29.92
         }
       ],
       "accessories": [
@@ -107,7 +108,7 @@
           "title": "Wyze MicroSD Card (256GB)",
           "image": "/small/microsd.svg",
           "quantity": 2,
-          "price": 41.96
+          "unitPrice": 20.98
         }
       ],
       "plan": {
