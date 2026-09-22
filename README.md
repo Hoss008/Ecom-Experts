@@ -99,4 +99,6 @@ To handle the requirement of restoring a user's configuration upon a return visi
 2. **Variant Handling Complexity:** The prompt requires that product variants (e.g., Red vs. Blue cameras) track quantities entirely independently while sharing the same parent product card. I structured the Zustand store to use composite dictionary keys (`${productId}-${variantId}`). This O(1) lookup allows both the builder cards and the review panel to instantly read and update specific variant quantities without iterating through complex nested arrays.
 3. **Render Optimization:** Context API would trigger a re-render of the entire two-column layout every time a user increments a stepper. Zustand allows the Review Panel and individual Product Cards to select only the specific slices of state they care about, keeping the live-updating UI highly performant. 
 
+## There is a backend server in Express.js in the backend branch for Bonus
+
 *Note on "Save for Later":* Because `persist` actively mirrors the state to local storage in real-time, the shopper's configuration is inherently protected against accidental tab closures. The "Save my system for later" button serves primarily as a UX confirmation to give the user peace of mind, leveraging the data already secured in the browser.
